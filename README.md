@@ -1,6 +1,7 @@
 # vibecheck
 
-To be able to run the React project, you need to have NPM installed in terminal/cmd
+To be able to run the React project, you need to have NPM installed in terminal/cmd  
+
 Run 'npm install'  
 
 Run 'expo start'  
