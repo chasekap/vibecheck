@@ -1,6 +1,8 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-//Test edit, test edit #2
+
+//shitty ass comment
+
 export default function App() {
   return (
     <View style={styles.container}>
