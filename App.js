@@ -2,6 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 //shitty ass comment
+//Pushing to testbranch
 
 export default function App() {
   return (
