@@ -82,5 +82,6 @@ def analyze_text(texts):
         sentiment_sum += compound_sentiment
         
 search_twitter('Trump')
+analyze_text(twitter_comments)
 mean_sentiment = sentiment_sum / num_datum
 print("Mean Sentiment:", mean_sentiment, " - ", interpret_compound_score(mean_sentiment))
