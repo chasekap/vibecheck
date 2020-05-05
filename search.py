@@ -51,7 +51,7 @@ def search_reddit(posts):
                 reddit_comments.append(comment.body)
    
     
-search_reddit(reddit_urls)
+#search_reddit(reddit_urls)
 
 
 
@@ -65,19 +65,22 @@ def search_twitter(keyword):
 
   public_tweets = api.search(keyword)
 
-  global num_datum, sentiment_sum
-  num_datum += len(public_tweets)
-
   for tweet in public_tweets:
     tweety = tweet.text
     twitter_comments.append(tweety)
     print(tweety)
-    compound_sentiment = analyser.polarity_scores(tweety).get('compound')
-    print("Compund sentiment: ", compound_sentiment, " - ", 
-        interpret_compound_score(compound_sentiment), "\n")
-    sentiment_sum += compound_sentiment
+    
 
 #Test because ppl love to tweet about him
+def analyize_text(texts):
+    global num_datum, sentiment_sum
+    num_datum += len(public_tweets)
+    for text in texts: 
+        compound_sentiment = analyser.polarity_scores(tweety).get('compound')
+        print("Compund sentiment: ", compound_sentiment, " - ", 
+                interpret_compound_score(compound_sentiment), "\n")
+        sentiment_sum += compound_sentiment
+        
 search_twitter('Trump')
 mean_sentiment = sentiment_sum / num_datum
 print("Mean Sentiment:", mean_sentiment, " - ", interpret_compound_score(mean_sentiment))
