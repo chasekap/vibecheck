@@ -72,7 +72,7 @@ def search_twitter(keyword):
     
 
 #Test because ppl love to tweet about him
-def analyize_text(texts):
+def analyze_text(texts):
     global num_datum, sentiment_sum
     num_datum += len(public_tweets)
     for text in texts: 
