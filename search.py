@@ -74,9 +74,9 @@ def search_twitter(keyword):
 #Test because ppl love to tweet about him
 def analyze_text(texts):
     global num_datum, sentiment_sum
-    num_datum += len(public_tweets)
+    num_datum += len(texts)
     for text in texts: 
-        compound_sentiment = analyser.polarity_scores(tweety).get('compound')
+        compound_sentiment = analyser.polarity_scores(text).get('compound')
         print("Compund sentiment: ", compound_sentiment, " - ", 
                 interpret_compound_score(compound_sentiment), "\n")
         sentiment_sum += compound_sentiment
