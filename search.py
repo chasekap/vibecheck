@@ -1,6 +1,7 @@
 import requests
 import praw #reddit api wrapper
 import tweepy
+from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 
 #google auth
 GOOGLE_API_KEY = "AIzaSyCOzm2amNVwqxRg2K0BUe59aOTXvhAgMXo" #pls don't query more than 25 times a day thnx 
@@ -15,10 +16,21 @@ access_token_secret = 'X0IHoSQdXEJ4ZWrGBEpQlb5r9W20dwFm3hk3YM6CBOXYv'
 
 
 
-reddit_urls = [] #populated by search 
+reddit_urls = [] #populated by search
 reddit_comments = [] #populated by search_reddit
 twitter_comments = []
 
+
+analyser = SentimentIntensityAnalyzer()
+num_datum = 0
+sentiment_sum = 0
+
+def interpret_compound_score(score):
+    if score >= 0.05:
+        return "positive"
+    if score <= -.05:
+        return "negative"
+    return "neutral"
 
 def search_google(query):
     url = f"https://www.googleapis.com/customsearch/v1?key={GOOGLE_API_KEY}&cx={SEARCH}&q={query}"
@@ -53,10 +65,19 @@ def search_twitter(keyword):
 
   public_tweets = api.search(keyword)
 
+  global num_datum, sentiment_sum
+  num_datum += len(public_tweets)
+
   for tweet in public_tweets:
     tweety = tweet.text
     twitter_comments.append(tweety)
-    print(tweety + '\n')
+    print(tweety)
+    compound_sentiment = analyser.polarity_scores(tweety).get('compound')
+    print("Compund sentiment: ", compound_sentiment, " - ", 
+        interpret_compound_score(compound_sentiment), "\n")
+    sentiment_sum += compound_sentiment
 
 #Test because ppl love to tweet about him
 search_twitter('Trump')
+mean_sentiment = sentiment_sum / num_datum
+print("Mean Sentiment:", mean_sentiment, " - ", interpret_compound_score(mean_sentiment))

@@ -1,0 +1,3 @@
+tweepy              #Twitter API Wrapper
+praw                #Reddit API Wrapper
+vadersentiment      #"Valence Aware Dictionary and sEntiment Reasoner" Sentiment Analysis tool tuned for social media
