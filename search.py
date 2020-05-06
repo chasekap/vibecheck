@@ -5,9 +5,9 @@ import string
 import nltk 
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 
-nltk.download('stopwords')
-nltk.download('punkt')
-nltk.download('averaged_perceptron_tagger')
+#nltk.download('stopwords')
+#nltk.download('punkt')
+#nltk.download('averaged_perceptron_tagger')
 
 blocked = {'RT', '@', 'https'} #common things we should filter
 #google auth
@@ -20,8 +20,6 @@ consumer_secret = 'IqsGUG3TeI9n8b9dqnZdlgT5uyt6wgKbjcS0kP2picRZZRcn7o'
 
 access_token = '1112775245814001669-SLLqbSl0bE4msn2iR4eSl7MKM7PFUb'
 access_token_secret = 'X0IHoSQdXEJ4ZWrGBEpQlb5r9W20dwFm3hk3YM6CBOXYv'
-
-
 
 
 reddit_urls = [] #populated by search
@@ -48,22 +46,8 @@ def search_google(query):
     for result in results: 
         if "reddit" in result['link']: 
             reddit_urls.append(result['link'])
-
-
-
-def search_reddit(posts):
-    r = praw.Reddit(client_id="HI7iay-n7u2c_g", client_secret="xW4tDzN9RQdhxTcPuYehQ4bIKMo", user_agent="vibecheck" )
-    if posts: #nonempty
-        for post in posts: 
-            postP = r.submission(url=post)
-            for comment in postP.comments:
-                reddit_comments.append(comment.body)
    
-    
-#search_reddit(reddit_urls)
-
-
-def word_cloud(strings): #returns a list of tuples [word,freq]
+def word_count(strings): #returns a list of tuples [word,freq]
     words = {}
     for s in strings: 
         s = s.strip(string.punctuation)
@@ -78,6 +62,19 @@ def word_cloud(strings): #returns a list of tuples [word,freq]
                     
     return sorted(words.items(), key= lambda x: x[1], reverse=True)
 
+def search_reddit(posts):
+    r = praw.Reddit(client_id="HI7iay-n7u2c_g", client_secret="xW4tDzN9RQdhxTcPuYehQ4bIKMo", user_agent="vibecheck" )
+    if posts: #nonempty
+        for post in posts: 
+            try:
+                postP = r.submission(url=post)
+            except: 
+                continue
+            for comment in postP.comments:
+                if isinstance(comment,praw.models.MoreComments):
+                    break
+                reddit_comments.append(comment.body)
+
 def search_twitter(keyword):
 
   auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
@@ -90,21 +87,20 @@ def search_twitter(keyword):
   for tweet in public_tweets:
     tweety = tweet.text
     twitter_comments.append(tweety)
-    
 
-#Test because ppl love to tweet about him
 def analyze_text(texts):
     global num_datum, sentiment_sum
     num_datum += len(texts)
     for text in texts: 
         compound_sentiment = analyser.polarity_scores(text).get('compound')
-        print("Tweet: ", text, "\nCompund sentiment: ", compound_sentiment, " - ",
-                interpret_compound_score(compound_sentiment), "\n")
+       # print("Tweet: ", text, "\nCompund sentiment: ", compound_sentiment, " - ",
+               # interpret_compound_score(compound_sentiment), "\n")
         sentiment_sum += compound_sentiment
         
 search_twitter('Tiger King')
 analyze_text(twitter_comments)
 mean_sentiment = sentiment_sum / num_datum
-print("Mean Sentiment:", mean_sentiment, " - ", interpret_compound_score(mean_sentiment))
-print(word_cloud(twitter_comments))
+
+#print("Mean Sentiment:", mean_sentiment, " - ", interpret_compound_score(mean_sentiment))
+#print(word_count(reddit_comments))
 
