@@ -3,13 +3,15 @@ import praw #reddit api wrapper
 import tweepy
 import string
 import nltk 
+
+from nltk.corpus import stopwords
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 
 #nltk.download('stopwords')
 #nltk.download('punkt')
 #nltk.download('averaged_perceptron_tagger')
 
-blocked = {'RT', '@', 'https'} #common things we should filter
+blocked = {'RT', '@', 'https','*', '>', '<' , '[', ']','"','%'} #common things we should filter
 #google auth
 GOOGLE_API_KEY = "AIzaSyCOzm2amNVwqxRg2K0BUe59aOTXvhAgMXo" #pls don't query more than 25 times a day thnx 
 SEARCH = "014749590020630390210:k5gghnyn2pt" #https://cse.google.com/cse/setup/basic?cx=014749590020630390210:k5gghnyn2pt
@@ -49,18 +51,20 @@ def search_google(query):
    
 def word_count(strings): #returns a list of tuples [word,freq]
     words = {}
+    multiwords = {}
+    stops = stopwords.words('english')
     for s in strings: 
-        s = s.strip(string.punctuation)
+        s = s.strip(string.punctuation).lower()
         toked = nltk.word_tokenize(s)
         toked = nltk.pos_tag(toked)
         for word in toked:
             if (word[1] == 'NN' or word[1] == 'NNP' or word[1] == 'ADJ') and word[0] not in blocked: #noun, adjective
                 if word[0] in words:
                     words[word[0]] += 1 
+                    multiwords[word[0]] = words[word[0]]
                 else: 
-                    words[word[0]] = 1
-                    
-    return sorted(words.items(), key= lambda x: x[1], reverse=True)
+                    words[word[0]] = 1          
+    return sorted(multiwords.items(), key= lambda x: x[1], reverse=True) #only returning words that occur multiple times drastically improves time complexity
 
 def search_reddit(posts):
     r = praw.Reddit(client_id="HI7iay-n7u2c_g", client_secret="xW4tDzN9RQdhxTcPuYehQ4bIKMo", user_agent="vibecheck" )
@@ -70,10 +74,13 @@ def search_reddit(posts):
                 postP = r.submission(url=post)
             except: 
                 continue
-            for comment in postP.comments:
+            reddit_comments.append(postP.selftext)
+            comments = postP.comments
+            for comment in comments:
                 if isinstance(comment,praw.models.MoreComments):
-                    break
-                reddit_comments.append(comment.body)
+                        comments = comment.comments()
+                else:
+                    reddit_comments.append(comment.body)
 
 def search_twitter(keyword):
 
@@ -96,11 +103,20 @@ def analyze_text(texts):
        # print("Tweet: ", text, "\nCompund sentiment: ", compound_sentiment, " - ",
                # interpret_compound_score(compound_sentiment), "\n")
         sentiment_sum += compound_sentiment
-        
+
+
+
+
+
+search_google('pokemon')
 search_twitter('Tiger King')
+search_reddit(reddit_urls)
+print(len(reddit_comments))
+print(word_count(reddit_comments))
+'''
 analyze_text(twitter_comments)
 mean_sentiment = sentiment_sum / num_datum
-
+'''
 #print("Mean Sentiment:", mean_sentiment, " - ", interpret_compound_score(mean_sentiment))
-#print(word_count(reddit_comments))
+
 
