@@ -1,8 +1,15 @@
 import requests
 import praw #reddit api wrapper
 import tweepy
+import string
+import nltk 
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 
+nltk.download('stopwords')
+nltk.download('punkt')
+nltk.download('averaged_perceptron_tagger')
+
+blocked = {'RT', '@', 'https'} #common things we should filter
 #google auth
 GOOGLE_API_KEY = "AIzaSyCOzm2amNVwqxRg2K0BUe59aOTXvhAgMXo" #pls don't query more than 25 times a day thnx 
 SEARCH = "014749590020630390210:k5gghnyn2pt" #https://cse.google.com/cse/setup/basic?cx=014749590020630390210:k5gghnyn2pt
@@ -16,6 +23,7 @@ access_token_secret = 'X0IHoSQdXEJ4ZWrGBEpQlb5r9W20dwFm3hk3YM6CBOXYv'
 
 
 
+
 reddit_urls = [] #populated by search
 reddit_comments = [] #populated by search_reddit
 twitter_comments = []
@@ -24,6 +32,7 @@ twitter_comments = []
 analyser = SentimentIntensityAnalyzer()
 num_datum = 0
 sentiment_sum = 0
+
 
 def interpret_compound_score(score):
     if score >= 0.05:
@@ -54,7 +63,20 @@ def search_reddit(posts):
 #search_reddit(reddit_urls)
 
 
-
+def word_cloud(strings): #returns a list of tuples [word,freq]
+    words = {}
+    for s in strings: 
+        s = s.strip(string.punctuation)
+        toked = nltk.word_tokenize(s)
+        toked = nltk.pos_tag(toked)
+        for word in toked:
+            if (word[1] == 'NN' or word[1] == 'NNP' or word[1] == 'ADJ') and word[0] not in blocked: #noun, adjective
+                if word[0] in words:
+                    words[word[0]] += 1 
+                else: 
+                    words[word[0]] = 1
+                    
+    return sorted(words.items(), key= lambda x: x[1], reverse=True)
 
 def search_twitter(keyword):
 
@@ -63,7 +85,7 @@ def search_twitter(keyword):
 
   api = tweepy.API(auth)
 
-  public_tweets = api.search(keyword)
+  public_tweets = api.search(keyword,count=100)
 
   for tweet in public_tweets:
     tweety = tweet.text
@@ -80,7 +102,9 @@ def analyze_text(texts):
                 interpret_compound_score(compound_sentiment), "\n")
         sentiment_sum += compound_sentiment
         
-search_twitter('Trump')
+search_twitter('Tiger King')
 analyze_text(twitter_comments)
 mean_sentiment = sentiment_sum / num_datum
 print("Mean Sentiment:", mean_sentiment, " - ", interpret_compound_score(mean_sentiment))
+print(word_cloud(twitter_comments))
+
