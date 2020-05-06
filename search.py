@@ -3,6 +3,7 @@ import praw #reddit api wrapper
 import tweepy
 import string
 import nltk 
+import re
 
 from nltk.corpus import stopwords
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
@@ -11,7 +12,7 @@ from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 #nltk.download('punkt')
 #nltk.download('averaged_perceptron_tagger')
 
-blocked = {'RT', '@', 'https','*', '>', '<' , '[', ']','"','%'} #common things we should filter
+blocked = {'RT', '@', 'https','*', '>', '<' , '[', ']','"','%','i','|','way','t','http','post','s','’'} #common things we should filter
 #google auth
 GOOGLE_API_KEY = "AIzaSyCOzm2amNVwqxRg2K0BUe59aOTXvhAgMXo" #pls don't query more than 25 times a day thnx 
 SEARCH = "014749590020630390210:k5gghnyn2pt" #https://cse.google.com/cse/setup/basic?cx=014749590020630390210:k5gghnyn2pt
@@ -49,7 +50,7 @@ def search_google(query):
         if "reddit" in result['link']: 
             reddit_urls.append(result['link'])
    
-def word_count(strings): #returns a list of tuples [word,freq]
+def word_count(strings): #returns a list of tuples [word,freq] O(n) = nlog(n)
     words = {}
     multiwords = {}
     stops = stopwords.words('english')
@@ -61,10 +62,27 @@ def word_count(strings): #returns a list of tuples [word,freq]
             if (word[1] == 'NN' or word[1] == 'NNP' or word[1] == 'ADJ') and word[0] not in blocked: #noun, adjective
                 if word[0] in words:
                     words[word[0]] += 1 
-                    multiwords[word[0]] = words[word[0]]
+                    if words[word[0]] > 5:
+                        multiwords[word[0]] = words[word[0]]
                 else: 
                     words[word[0]] = 1          
-    return sorted(multiwords.items(), key= lambda x: x[1], reverse=True) #only returning words that occur multiple times drastically improves time complexity
+    return sorted(multiwords.items(), key= lambda x: x[1], reverse=True) #only sorting words that occur multiple times drastically improves time complexity
+
+def parse_subreddit(r,post,hot_flag=True): #query hot instead of top 
+    
+    lim = 20 #how many posts to return
+    match = re.search('\/r\/(.*?)\/', post) #only name of subreddit
+    subr = match.group(1)
+    sub = r.subreddit(subr).hot(limit=lim) if hot_flag else r.subreddit(subr).top(limit=lim)
+    for post in sub: 
+        reddit_comments.append(post.selftext)
+        comments = post.comments
+        for comment in comments:
+                if isinstance(comment,praw.models.MoreComments):
+                        break
+                        #comments = comment.comments()
+                else:
+                    reddit_comments.append(comment.body)
 
 def search_reddit(posts):
     r = praw.Reddit(client_id="HI7iay-n7u2c_g", client_secret="xW4tDzN9RQdhxTcPuYehQ4bIKMo", user_agent="vibecheck" )
@@ -73,14 +91,17 @@ def search_reddit(posts):
             try:
                 postP = r.submission(url=post)
             except: 
+                parse_subreddit(r,post)
                 continue
             reddit_comments.append(postP.selftext)
             comments = postP.comments
             for comment in comments:
                 if isinstance(comment,praw.models.MoreComments):
-                        comments = comment.comments()
+                        break
+                        #comments = comment.comments()
                 else:
                     reddit_comments.append(comment.body)
+
 
 def search_twitter(keyword):
 
@@ -108,10 +129,11 @@ def analyze_text(texts):
 
 
 
-search_google('pokemon')
+search_google('Coronavirus')
 search_twitter('Tiger King')
+#print(reddit_urls)
 search_reddit(reddit_urls)
-print(len(reddit_comments))
+#print(len(reddit_comments))
 print(word_count(reddit_comments))
 '''
 analyze_text(twitter_comments)
