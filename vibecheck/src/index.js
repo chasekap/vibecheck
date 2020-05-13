@@ -1,17 +1,32 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import 'antd/dist/antd.css';
 import './index.css';
-import App from './App';
-import * as serviceWorker from './serviceWorker';
+import { Input } from 'antd';
+import { Row, Col} from 'antd';
 
-ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-  document.getElementById('root')
+const { Search } = Input; 
+
+
+function getData(search){
+  fetch(`/search/${search}`).then(res => res.json()).then(data => {
+    console.log(data)
+  });
+}
+
+const MyRow = () => (
+  <Row type="flex" align="middle" style={{padding: '30% 0% 0% 0%'}}>
+    <Col md={10}>
+    </Col>
+    <Col md={5}><div>
+    <Search
+placeholder="input search text"
+onSearch={value => getData(value)}
+
+/></div></Col>
+<Col md={9}>
+    </Col>
+  </Row>
 );
-
-// If you want your app to work offline and load faster, you can change
-// unregister() to register() below. Note this comes with some pitfalls.
-// Learn more about service workers: https://bit.ly/CRA-PWA
-serviceWorker.unregister();
+const rowy =  <MyRow/>
+ReactDOM.render(rowy, document.getElementById('root'));
