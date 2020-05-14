@@ -25,8 +25,8 @@ access_token = '1112775245814001669-SLLqbSl0bE4msn2iR4eSl7MKM7PFUb'
 access_token_secret = 'X0IHoSQdXEJ4ZWrGBEpQlb5r9W20dwFm3hk3YM6CBOXYv'
 
 
-reddit_urls = [] #populated by search
-reddit_comments = [] #populated by search_reddit
+
+
 twitter_comments = []
 
 
@@ -43,12 +43,14 @@ def interpret_compound_score(score):
     return "neutral"
 
 def search_google(query):
+    reddit_urls = [] #populated by search
     url = f"https://www.googleapis.com/customsearch/v1?key={GOOGLE_API_KEY}&cx={SEARCH}&q={query}"
     data = requests.get(url).json()
     results = data['items']
     for result in results: 
         if "reddit" in result['link']: 
             reddit_urls.append(result['link'])
+    return reddit_urls
    
 def word_count(strings): #returns a list of tuples [word,freq] O(n) = nlog(n)
     words = {}
@@ -66,9 +68,9 @@ def word_count(strings): #returns a list of tuples [word,freq] O(n) = nlog(n)
                         multiwords[word[0]] = words[word[0]]
                 else: 
                     words[word[0]] = 1          
-    return sorted(multiwords.items(), key= lambda x: x[1], reverse=True) #only sorting words that occur multiple times drastically improves time complexity
-
-def parse_subreddit(r,post,hot_flag=True): #query hot instead of top 
+  
+    return multiwords
+def parse_subreddit(r,reddit_comments,post,hot_flag=True): #query hot instead of top 
     
     lim = 20 #how many posts to return
     match = re.search('\/r\/(.*?)\/', post) #only name of subreddit
@@ -83,15 +85,17 @@ def parse_subreddit(r,post,hot_flag=True): #query hot instead of top
                         #comments = comment.comments()
                 else:
                     reddit_comments.append(comment.body)
+    
 
 def search_reddit(posts):
+    reddit_comments = [] #populated by search_reddit
     r = praw.Reddit(client_id="HI7iay-n7u2c_g", client_secret="xW4tDzN9RQdhxTcPuYehQ4bIKMo", user_agent="vibecheck" )
     if posts: #nonempty
         for post in posts: 
             try:
                 postP = r.submission(url=post)
             except: 
-                parse_subreddit(r,post)
+                parse_subreddit(r,reddit_comments,post)
                 continue
             reddit_comments.append(postP.selftext)
             comments = postP.comments
@@ -101,6 +105,7 @@ def search_reddit(posts):
                         #comments = comment.comments()
                 else:
                     reddit_comments.append(comment.body)
+    return reddit_comments
 
 
 def search_twitter(keyword):
@@ -129,12 +134,12 @@ def analyze_text(texts):
 
 
 
-search_google('Coronavirus')
-search_twitter('Tiger King')
+#coms = search_google('Feminism')
+#search_twitter('Tiger King')
 #print(reddit_urls)
-search_reddit(reddit_urls)
-#print(len(reddit_comments))
-print(word_count(reddit_comments))
+#geeg = search_reddit(coms)
+
+
 '''
 analyze_text(twitter_comments)
 mean_sentiment = sentiment_sum / num_datum
