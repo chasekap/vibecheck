@@ -16,8 +16,35 @@ class ParentLayout extends React.Component {
     render() {
         return (
             <Layout style={{ height: "100vh", overflow: "auto" }}>
+                <LayoutHeader />
                 <SearchFormContent />
+                <LayoutFooter />
             </Layout>
+        );
+    }
+}
+
+class LayoutHeader extends React.Component {
+    render() {
+        return (
+            <Header
+                style={{
+                    position: "fixed",
+                    zIndex: 1,
+                    width: "100%",
+                    padding: "0",
+                }}
+            >
+                <Menu
+                    theme="light"
+                    inlineIndent={0}
+                    mode="horizontal"
+                    defaultSelectedKeys={["0"]}
+                >
+                    <Menu.Item key="0">Search</Menu.Item>
+                    <Menu.Item key="1">Trends</Menu.Item>
+                </Menu>
+            </Header>
         );
     }
 }
@@ -33,8 +60,10 @@ class SearchFormContent extends React.Component {
                         align="middle"
                         style={{ height: "100%" }}
                     >
-                        <Col type="flex" justify="center" align="middle">
+                        <Col type="flex" align="middle" span={10}>
+                            <div style={{ fontSize: "48px" }}>vibecheck</div>
                             <Search
+                                style={{ padding: "20px" }}
                                 placeholder="what's on your mind?"
                                 onSearch={(value) => getData(value)}
                                 enterButton
@@ -47,6 +76,16 @@ class SearchFormContent extends React.Component {
     }
 }
 
+class LayoutFooter extends React.Component {
+    render() {
+        return (
+            <Footer style={{ textAlign: "center", padding: "5px" }}>
+                <div>Made with &lt;3 by vibecheck Group</div>
+            </Footer>
+        );
+    }
+}
+
 function getData(search) {
     fetch(`/search/${search}`)
         .then((res) => res.json())
@@ -55,7 +94,4 @@ function getData(search) {
         });
 }
 
-ReactDOM.render(
-    <ParentLayout />, 
-    document.getElementById("root")
-);
+ReactDOM.render(<ParentLayout />, document.getElementById("root"));
