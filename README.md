@@ -1,10 +1,16 @@
 # VIBECHECK
 
+
 ## Requirements:
+
+For search.py first run
+pip install -r requirements.txt
+
 
 For search.py first run `pip install -r requirements.txt`
 
 additionally, to get the required NLTK modules run `python -m nltk.downloader stopwords punkt averaged_perceptron_tagger`
+
 
 To be able to run the React project, you need to have `npm` installed (included with Node.js)
 
@@ -87,3 +93,4 @@ This section has moved here: https://facebook.github.io/create-react-app/docs/de
 #### `yarn build` fails to minify
 
 This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
+
