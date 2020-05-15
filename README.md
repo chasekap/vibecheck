@@ -37,7 +37,8 @@ For Windows:
   
   `pip install flask`  
   
-  
+Don't forget to run `pip install requirements.txt` in src/api!  
+
 You should also set the environmental variable FLASK_APP = search.py
 
 Run `yarn start` to start react localhost
