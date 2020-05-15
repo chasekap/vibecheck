@@ -28,7 +28,7 @@ For Mac:
   
   `pip install flask`  
   
-  `
+  
 For Windows:
 
  `python3 -m venv venv`  
@@ -37,12 +37,14 @@ For Windows:
   
   `pip install flask`  
   
-  `
+  
 You should also set the environmental variable FLASK_APP = search.py
 
 Run `yarn start` to start react localhost
 
-Run `yarn start-api` to start flask localhost
+Run `yarn start-api` to start flask localhost on Windows  
+Run `yarn start-api-m` to start flask localhost on Mac    
+
 
 If you need to add a new dependency, run `npm install [module] --save`
 
