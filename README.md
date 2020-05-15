@@ -22,15 +22,21 @@ To set up the flask server, `cd src/api`
 
 For Mac: 
 
-` python3 -m venv venv  
-  source venv/bin/activate    
-  pip install flask  
+` python3 -m venv venv `  
+
+  ` source venv/bin/activate `  
+  
+  `pip install flask`  
+  
   `
 For Windows:
 
-` python3 -m venv venv
-  source venv/Scripts/activate  
-  pip install flask
+ `python3 -m venv venv`  
+ 
+  `source venv/Scripts/activate`  
+  
+  `pip install flask`  
+  
   `
 You should also set the environmental variable FLASK_APP = search.py
 
