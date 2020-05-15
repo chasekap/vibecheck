@@ -12,8 +12,23 @@ code {
         monospace;
 }
 
-.site-layout-content {
-    background: #fff;
-    padding: 24px;
-    height: 100%;
+.logo {
+    font-family: Tahoma, Geneva, sans-serif;
+    font-size: 48px;
+    letter-spacing: 4px;
+    word-spacing: 0px;
+    color: #000000;
+    font-weight: 400;
+    text-decoration: none solid rgb(68, 68, 68);
+    font-style: italic;
+    font-variant: small-caps;
+    text-transform: lowercase;
+}
+
+.search-bar {
+    width: 500px;
+}
+
+.input {
+    width: 100%;
 }

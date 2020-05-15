@@ -1,87 +1,112 @@
+import _ from "lodash";
 import React from "react";
 import ReactDOM from "react-dom";
 
+import { Menu, Grid, Search } from "semantic-ui-react";
+
 import "./index.css";
+import "semantic-ui-css/semantic.min.css";
 
-import "antd/dist/antd.css";
+const initialSearchState = { 
+    isLoading: false, 
+    results: [], 
+    value: "", 
+    timeout: 0,
+};
 
-import { Input } from "antd";
-import { Row, Col } from "antd";
-import { Layout, Menu, Breadcrumb } from "antd";
+const initialMenuState = { 
+    activeItem: "search",
+};
 
-const { Header, Content, Footer } = Layout;
-const { Search } = Input;
-
-class ParentLayout extends React.Component {
+class SearchPage extends React.Component {
     render() {
         return (
-            <Layout style={{ height: "100vh", overflow: "auto" }}>
-                <LayoutHeader />
-                <SearchFormContent />
-                <LayoutFooter />
-            </Layout>
+            <div>
+                <HeaderMenu />
+                <ContentSearch />
+            </div>
         );
     }
 }
 
-class LayoutHeader extends React.Component {
+class HeaderMenu extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = initialMenuState
+    }
+
+    handleItemClick = (e, { name }) => this.setState({ activeItem: name });
+
     render() {
+        const { activeItem } = this.state;
         return (
-            <Header
-                style={{
-                    position: "fixed",
-                    zIndex: 1,
-                    width: "100%",
-                    padding: "0",
-                }}
-            >
-                <Menu
-                    theme="light"
-                    inlineIndent={0}
-                    mode="horizontal"
-                    defaultSelectedKeys={["0"]}
+            <Menu>
+                <Menu.Item
+                    name="search"
+                    active={activeItem === "search"}
+                    onClick={this.handleItemClick}
                 >
-                    <Menu.Item key="0">Search</Menu.Item>
-                    <Menu.Item key="1">Trends</Menu.Item>
-                </Menu>
-            </Header>
+                    Search
+                </Menu.Item>
+
+                <Menu.Item
+                    name="trends"
+                    active={activeItem === "trends"}
+                    onClick={this.handleItemClick}
+                >
+                    Trends
+                </Menu.Item>
+            </Menu>
         );
     }
 }
 
-class SearchFormContent extends React.Component {
-    render() {
-        return (
-            <Content>
-                <div className="site-layout-content">
-                    <Row
-                        type="flex"
-                        justify="center"
-                        align="middle"
-                        style={{ height: "100%" }}
-                    >
-                        <Col type="flex" align="middle" span={10}>
-                            <div style={{ fontSize: "48px" }}>vibecheck</div>
-                            <Search
-                                style={{ padding: "20px" }}
-                                placeholder="what's on your mind?"
-                                onSearch={(value) => getData(value)}
-                                enterButton
-                            />
-                        </Col>
-                    </Row>
-                </div>
-            </Content>
-        );
+class ContentSearch extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = initialSearchState
     }
-}
 
-class LayoutFooter extends React.Component {
+    handleSearchChange = (e, { value }) => {
+        this.setState({ isLoading: true, value });
+
+        if(this.timeout) 
+            clearTimeout(this.timeout);
+
+        this.timeout = setTimeout(() => {
+            if (this.state.value.length < 1) 
+                return this.setState(initialSearchState);
+
+            getData(value)
+
+            this.setState({
+                isLoading: false,
+            });
+        }, 300);
+    };
+
     render() {
         return (
-            <Footer style={{ textAlign: "center", padding: "5px" }}>
-                <div>Made with &lt;3 by vibecheck Group</div>
-            </Footer>
+            <Grid container>
+                <Grid.Row centered style={{ padding: "150pt 0 0 0" }}>
+                    <div class="logo">vibecheck</div>
+                </Grid.Row>
+                <Grid.Row centered style={{ padding: "50pt 0 0 0" }}>
+                    <Search
+                        className="search-bar"
+                        loading={ this.state.isLoading }
+                        placeholder="what's on your mind?"
+                        onSearchChange={_.debounce(
+                            this.handleSearchChange,
+                            500,
+                            { leading: true }
+                        )}
+                        value={ this.state.value }
+                        open={ false }
+                        {...this.props}
+                    />
+                </Grid.Row>
+            </Grid>
         );
     }
 }
@@ -94,4 +119,4 @@ function getData(search) {
         });
 }
 
-ReactDOM.render(<ParentLayout />, document.getElementById("root"));
+ReactDOM.render(<SearchPage />, document.getElementById("root"));
