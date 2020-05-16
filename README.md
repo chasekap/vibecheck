@@ -4,7 +4,7 @@
 ## Requirements:
 
 For search.py first run
-pip install -r requirements.txt
+`pip install -r requirements.txt`
 
 
 For search.py first run `pip install -r requirements.txt`
