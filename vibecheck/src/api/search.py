@@ -61,6 +61,8 @@ def word_count(strings): #returns a list of tuples [word,freq] O(n) = nlog(n)
         toked = nltk.word_tokenize(s)
         toked = nltk.pos_tag(toked)
         for word in toked:
+            if len(word[0]) < 3 or len(word[0]) > 20: 
+                continue
             if (word[1] == 'NN' or word[1] == 'NNP' or word[1] == 'ADJ') and word[0] not in blocked: #noun, adjective
                 if word[0] in words:
                     words[word[0]] += 1 
@@ -95,7 +97,10 @@ def search_reddit(posts):
             try:
                 postP = r.submission(url=post)
             except: 
-                parse_subreddit(r,reddit_comments,post)
+                try: 
+                    parse_subreddit(r,reddit_comments,post)
+                except: 
+                    continue
                 continue
             reddit_comments.append(postP.selftext)
             comments = postP.comments
