@@ -36,7 +36,7 @@ For Mac:
   
   
 For Windows:
-  `source venv/Scripts/activate` (Git Bash) or '.\venv\Scripts\activate' (cmd)
+  `source venv/Scripts/activate` (Git Bash) or `.\venv\Scripts\activate` (cmd)
 
 While the venv is active, run `pip install -r requirements.txt`
 and to get the required NLTK modules run `python -m nltk.downloader stopwords punkt averaged_perceptron_tagger`  
