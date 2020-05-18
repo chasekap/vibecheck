@@ -3,6 +3,17 @@
 
 ## Requirements:
 
+Make sure to have installed Yarn before proceeding
+
+To do this:
+
+Run `brew install yarn`,
+
+Run `choco install yarn`,
+
+or visit https://classic.yarnpkg.com/en/docs/install/#windows-stable
+
+
 For search.py first run
 `pip install -r requirements.txt`
 
@@ -93,4 +104,3 @@ This section has moved here: https://facebook.github.io/create-react-app/docs/de
 #### `yarn build` fails to minify
 
 This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
-
