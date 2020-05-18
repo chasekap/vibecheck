@@ -3,46 +3,30 @@
 
 ## Requirements:
 
-For search.py first run
-`pip install -r requirements.txt`
-
-
-For search.py first run `pip install -r requirements.txt`
-
-additionally, to get the required NLTK modules run `python -m nltk.downloader stopwords punkt averaged_perceptron_tagger`
-
-
 To be able to run the React project, you need to have `npm` installed (included with Node.js)
 
 cd into vibecheck/vibecheck
 
 Run `npm install`  
 
-To set up the flask server, `cd src/api`   
+To set up the flask server and virtual environment, `cd src/api`  and then ` python3 -m venv venv `
 
 For Mac: 
-
-` python3 -m venv venv `  
-
   ` source venv/bin/activate `  
-  
-  `pip install flask`  
   
   
 For Windows:
+  `source venv/Scripts/activate` (Git Bash) or '.\venv\Scripts\activate' (cmd)
 
- `python3 -m venv venv`  
- 
-  `source venv/Scripts/activate`  
-  
-  `pip install flask`  
-  
-Don't forget to run `pip install requirements.txt` in src/api!  
+While the venv is active, run `pip install -r requirements.txt`
+and to get the required NLTK modules run `python -m nltk.downloader stopwords punkt averaged_perceptron_tagger`  
 
-You should also set the environmental variable FLASK_APP = search.py
+You should also set the environmental variable FLASK_APP = station.py
+'export FLASK_APP=station.py' (in Bash)
 
 Run `yarn start` to start react localhost
 
+Then...
 Run `yarn start-api` to start flask localhost on Windows  
 Run `yarn start-api-m` to start flask localhost on Mac    
 
