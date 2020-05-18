@@ -50,7 +50,7 @@ For Windows:
   
 Don't forget to run `pip install requirements.txt` in src/api!  
 
-You should also set the environmental variable FLASK_APP = search.py
+You should also set the environmental variable FLASK_APP = station.py
 
 Run `yarn start` to start react localhost
 
