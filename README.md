@@ -3,6 +3,26 @@
 
 ## Requirements:
 
+Make sure to have installed Yarn before proceeding
+
+To do this:
+
+Run `brew install yarn`,
+
+Run `choco install yarn`,
+
+or visit https://classic.yarnpkg.com/en/docs/install/#windows-stable
+
+
+For search.py first run
+`pip install -r requirements.txt`
+
+
+For search.py first run `pip install -r requirements.txt`
+
+additionally, to get the required NLTK modules run `python -m nltk.downloader stopwords punkt averaged_perceptron_tagger`
+
+
 To be able to run the React project, you need to have `npm` installed (included with Node.js)
 
 cd into vibecheck/vibecheck
@@ -102,4 +122,3 @@ This section has moved here: https://facebook.github.io/create-react-app/docs/de
 #### `yarn build` fails to minify
 
 This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
-
