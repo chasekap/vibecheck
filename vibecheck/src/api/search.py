@@ -5,6 +5,8 @@ import string
 import nltk
 import re
 import vars
+import sys
+import os
 
 from nltk.corpus import stopwords
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
@@ -26,9 +28,6 @@ access_token = vars.ACCESS_TOKEN
 access_token_secret = vars.ACCESS_TOKEN_SECRET
 
 
-
-
-twitter_comments = []
 
 
 analyser = SentimentIntensityAnalyzer()
@@ -119,14 +118,45 @@ def search_twitter(keyword):
   auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
   auth.set_access_token(access_token, access_token_secret)
 
-  api = tweepy.API(auth)
+  api = tweepy.API(auth, wait_on_rate_limit=True, wait_on_rate_limit_notify=True)
 
+  maxTweets = 1000
+  tweetsPerQuery = 100
+  tweetCount = 0
+
+  sinceId = None
+
+  twitter_comments = []
+
+  max_id = -1
+
+  while tweetCount < maxTweets:
+      if(max_id <= 0):
+          if(not sinceId):
+              tweets = api.search(q=keyword, count=tweetsPerQuery)
+          else:
+              tweets = api.search(q=keyword, count=tweetsPerQuery, since_id=sinceId)
+      else:
+          if(not sinceId):
+              tweets = api.search(q=keyword, count=tweetsPerQuery, max_id=str(max_id - 1))
+          else:
+              tweets = api.search(q=keyword, count=tweetsPerQuery, max_id=str(max_id - 1), since_id=sinceId)
+      if(not tweets):
+          break
+      for tweet in tweets:
+          twitter_comments.append(tweet.text)
+          #print(tweet.text + '\n') for testing purposes
+      tweetCount += len(tweets)
+      max_id = tweets[-1].id
+
+  '''
   public_tweets = api.search(keyword,count=100)
 
   for tweet in public_tweets:
     tweety = tweet.text
     #print(tweety + '\n') test output
     twitter_comments.append(tweety)
+  '''
 
 def analyze_text(texts):
     global num_datum, sentiment_sum
@@ -142,7 +172,7 @@ def analyze_text(texts):
 
 
 #coms = search_google('Feminism')
-#search_twitter('Tiger King')
+search_twitter('Tiger King')
 #print(reddit_urls)
 #geeg = search_reddit(coms)
 
