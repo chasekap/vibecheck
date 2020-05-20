@@ -3,6 +3,17 @@
 
 ## Requirements:
 
+Make sure to have installed Yarn before proceeding
+
+To do this:
+
+Run `brew install yarn`,
+
+Run `choco install yarn`,
+
+or visit https://classic.yarnpkg.com/en/docs/install/#windows-stable
+
+
 For search.py first run
 `pip install -r requirements.txt`
 
@@ -16,11 +27,29 @@ To be able to run the React project, you need to have `npm` installed (included 
 
 cd into vibecheck/vibecheck
 
-Run `npm install`
+Run `npm install`  
+
+To set up the flask server and virtual environment, `cd src/api`  and then ` python3 -m venv venv `
+
+For Mac: 
+  ` source venv/bin/activate `  
+  
+  
+For Windows:
+  `source venv/Scripts/activate` (Git Bash) or `.\venv\Scripts\activate` (cmd)
+
+While the venv is active, run `pip install -r requirements.txt`
+and to get the required NLTK modules run `python -m nltk.downloader stopwords punkt averaged_perceptron_tagger`  
+
+You should also set the environmental variable FLASK_APP = station.py
+'export FLASK_APP=station.py' (in Bash)
 
 Run `yarn start` to start react localhost
 
-Run `yarn start-api` to start flask localhost
+Then...
+Run `yarn start-api` to start flask localhost on Windows  
+Run `yarn start-api-m` to start flask localhost on Mac    
+
 
 If you need to add a new dependency, run `npm install [module] --save`
 
@@ -93,4 +122,3 @@ This section has moved here: https://facebook.github.io/create-react-app/docs/de
 #### `yarn build` fails to minify
 
 This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
-
