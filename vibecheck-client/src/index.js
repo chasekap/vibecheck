@@ -89,7 +89,7 @@ class ContentSearch extends React.Component {
         return (
             <Grid container>
                 <Grid.Row centered style={{ padding: "150pt 0 0 0" }}>
-                    <div class="logo">vibecheck</div>
+                    <div className="logo">vibecheck</div>
                 </Grid.Row>
                 <Grid.Row centered style={{ padding: "50pt 0 0 0" }}>
                     <Search

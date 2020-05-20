@@ -1,6 +1,5 @@
 # VIBECHECK
 
-
 ## Requirements:
 
 Make sure to have installed Yarn before proceeding
@@ -13,45 +12,40 @@ Run `choco install yarn`,
 
 or visit https://classic.yarnpkg.com/en/docs/install/#windows-stable
 
+There are two parts to this repository: a React web app in `/vibecheck-client` and a Flask web server in `/vibecheck-server`.
 
-For search.py first run
-`pip install -r requirements.txt`
+### React App
+To be able to run the React web app, you need to have `npm` installed (included with Node.js).
 
+First, `cd` into `vibecheck/vibecheck-client`.
 
-For search.py first run `pip install -r requirements.txt`
+Run `npm install`.
 
-additionally, to get the required NLTK modules run `python -m nltk.downloader stopwords punkt averaged_perceptron_tagger`
+Then, run `yarn start` to start the react localhost.
 
+_If you need to add a new dependency, run `npm install [module] --save`_
 
-To be able to run the React project, you need to have `npm` installed (included with Node.js)
+### Web Server
+Now, in a new terminal window:
 
-cd into vibecheck/vibecheck
+First, `cd` into `vibecheck/vibecheck-server`; then set up the Python virtual environment with `python3 -m venv venv`.
 
-Run `npm install`  
-
-To set up the flask server and virtual environment, `cd src/api`  and then ` python3 -m venv venv `
-
+Then, launch the virtual environment:
 For Mac: 
   ` source venv/bin/activate `  
-  
-  
 For Windows:
   `source venv/Scripts/activate` (Git Bash) or `.\venv\Scripts\activate` (cmd)
 
 While the venv is active, run `pip install -r requirements.txt`
-and to get the required NLTK modules run `python -m nltk.downloader stopwords punkt averaged_perceptron_tagger`  
+and to get the required NLTK modules run `python -m nltk.downloader stopwords punkt averaged_perceptron_tagger`
+
+Run `pip install python-dotenv` to include the .flaskenv/.env files.
 
 You should also set the environmental variable FLASK_APP = station.py
 'export FLASK_APP=station.py' (in Bash)
 
-Run `yarn start` to start react localhost
-
-Then...
 Run `yarn start-api` to start flask localhost on Windows  
 Run `yarn start-api-m` to start flask localhost on Mac    
-
-
-If you need to add a new dependency, run `npm install [module] --save`
 
 ## More information from Create React App README:
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
