@@ -172,7 +172,7 @@ def analyze_text(texts):
 
 
 #coms = search_google('Feminism')
-search_twitter('Tiger King')
+#search_twitter('Tiger King')
 #print(reddit_urls)
 #geeg = search_reddit(coms)
 
