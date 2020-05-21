@@ -32,7 +32,7 @@ class SearchPage extends React.Component {
 class HeaderMenu extends React.Component {
     constructor(props) {
         super(props);
-        this.state = initialMenuState
+        this.state = initialMenuState;
     }
 
     handleItemClick = (e, { name }) => this.setState({ activeItem: name });
@@ -64,9 +64,9 @@ class HeaderMenu extends React.Component {
 class ContentSearch extends React.Component {
     constructor(props) {
         super(props);
-        this.state = initialSearchState
-        this.state.avg_sentiment = "(mean sentiment score, (-1 to 1 inclusive)"
-        this.state.sentiment_string = "TBD"
+        this.state = initialSearchState;
+        this.state.avg_sentiment = "(mean sentiment score, (-1 to +1 inclusive) )";
+        this.state.sentiment_string = "TBD";
     }
 
     handleSearchChange = (e, { value }) => {
@@ -79,7 +79,7 @@ class ContentSearch extends React.Component {
             if (this.state.value.length < 1) 
                 return this.setState(initialSearchState);
 
-            this.getData(value)
+            this.getData(value);
 
             this.setState({
                 isLoading: false,
@@ -129,16 +129,16 @@ class ContentSearch extends React.Component {
                 console.log(data);
                 let avg_sent = data.avg_sentiment;//data.avg_sentiment
 
-                let sent_string = "neutral"
+                let sent_string = "neutral";
                 if(avg_sent >= .05) {
-                    sent_string = "positive"
+                    sent_string = "positive";
                 } else if(avg_sent <= -0.05) {
-                    sent_string = "negative"
+                    sent_string = "negative";
                 }
                 this.setState({
                     avg_sentiment: avg_sent,
                     sentiment_string: sent_string
-                })
+                });
             });
     }
 }
