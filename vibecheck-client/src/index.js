@@ -65,7 +65,7 @@ class ContentSearch extends React.Component {
     constructor(props) {
         super(props);
         this.state = initialSearchState;
-        this.state.avg_sentiment = "(mean sentiment score, (-1 to 1 inclusive)";
+        this.state.avg_sentiment = "(mean sentiment score, (-1 to +1 inclusive) )";
         this.state.sentiment_string = "TBD";
     }
 
