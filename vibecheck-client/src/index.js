@@ -65,6 +65,8 @@ class ContentSearch extends React.Component {
     constructor(props) {
         super(props);
         this.state = initialSearchState
+        this.state.avg_sentiment = "(mean sentiment score, (-1 to 1 inclusive)"
+        this.state.sentiment_string = "TBD"
     }
 
     handleSearchChange = (e, { value }) => {
@@ -77,7 +79,7 @@ class ContentSearch extends React.Component {
             if (this.state.value.length < 1) 
                 return this.setState(initialSearchState);
 
-            getData(value)
+            this.getData(value)
 
             this.setState({
                 isLoading: false,
@@ -106,17 +108,39 @@ class ContentSearch extends React.Component {
                         {...this.props}
                     />
                 </Grid.Row>
+                <Grid.Row centered style={{ padding: "20pt 0 0 0" }}>
+                    <div className="header">   
+                        {"Sentiment Score: " + this.state.avg_sentiment}
+                        </div>
+                </Grid.Row>
+                <Grid.Row centered style={{ padding: "5pt 0 0 0" }}>
+                    <div className="header">
+                        {"Vibes: " + this.state.sentiment_string}
+                        </div>
+                </Grid.Row>
             </Grid>
         );
     }
-}
 
-function getData(search) {
-    fetch(`/search/${search}`)
-        .then((res) => res.json())
-        .then((data) => {
-            console.log(data);
-        });
+    getData(search) {
+        fetch(`/search/${search}`)
+            .then((res) => res.json())
+            .then((data) => {
+                console.log(data);
+                let avg_sent = data.avg_sentiment;//data.avg_sentiment
+
+                let sent_string = "neutral"
+                if(avg_sent >= .05) {
+                    sent_string = "positive"
+                } else if(avg_sent <= -0.05) {
+                    sent_string = "negative"
+                }
+                this.setState({
+                    avg_sentiment: avg_sent,
+                    sentiment_string: sent_string
+                })
+            });
+    }
 }
 
 ReactDOM.render(<SearchPage />, document.getElementById("root"));
