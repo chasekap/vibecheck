@@ -127,7 +127,7 @@ def search_twitter(keyword):
 
   api = tweepy.API(auth, wait_on_rate_limit=True, wait_on_rate_limit_notify=True)
 
-  maxTweets = 1000
+  maxTweets = 100   #Lowered to prevent api cooldown
   tweetsPerQuery = 100
   tweetCount = 0
 
@@ -156,6 +156,8 @@ def search_twitter(keyword):
       tweetCount += len(tweets)
       max_id = tweets[-1].id
 
+  return twitter_comments
+
   '''
   public_tweets = api.search(keyword,count=100)
 
@@ -177,6 +179,10 @@ def analyze_text(texts):
                # interpret_compound_score(compound_sentiment), "\n")
         
         sentiment_sum += compound_sentiment
+    if (num_datum != 0):
+        return sentiment_sum / num_datum
+    else:
+        return "Nothing Found!"
 
 
 

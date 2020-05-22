@@ -6,6 +6,7 @@ app = Flask(__name__)
 
 @app.route('/search/<search>')
 def search_request(search):
+
     #tweets = s.search_twitter(search)
     urls = s.search_google(search)
     coms = s.search_reddit(urls)
@@ -18,8 +19,4 @@ def search_request(search):
         "comments" : len(coms)
     }
     return output_dict
-
-    #return str(avg_sentiment)      
-    
-    ##return s.word_count(coms)
     
