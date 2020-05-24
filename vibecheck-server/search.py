@@ -74,12 +74,16 @@ def word_count(strings): #returns a list of tuples [word,freq] O(n) = nlog(n)
     return multiwords
 def parse_subreddit(r,reddit_comments,post,hot_flag=True): #query hot instead of top
 
-    lim = 20 #how many posts to return
+    lim = 5 #how many posts to return
     match = re.search('\/r\/(.*?)\/', post) #only name of subreddit
     subr = match.group(1)
-    sub = r.subreddit(subr).hot(limit=lim) if hot_flag else r.subreddit(subr).top(limit=lim)
+    sub = r.subreddit(subr).top('week',limit=3)
+    #sub = r.subreddit(subr).hot(limit=lim) if hot_flag else r.subreddit(subr).top(limit=lim)
     for post in sub:
+        if len(reddit_comments) >= 1000: 
+                break
         reddit_comments.append(post.selftext)
+        post.comment_sort = 'best'
         comments = post.comments
         for comment in comments:
                 if isinstance(comment,praw.models.MoreComments):
@@ -94,14 +98,17 @@ def search_reddit(posts):
     r = praw.Reddit(client_id=vars.REDDIT_CLIENT_ID, client_secret=vars.REDDIT_CLIENT_SECRET, user_agent="vibecheck" )
     if posts: #nonempty
         for post in posts:
+            if len(reddit_comments) >= 1000: 
+                break
             try:
                 postP = r.submission(url=post)
             except:
                 try:
-                    parse_subreddit(r,reddit_comments,post)
+                   parse_subreddit(r,reddit_comments,post)
                 except:
-                    continue
+                   continue
                 continue
+            postP.comment_sort = 'best'
             reddit_comments.append(postP.selftext)
             comments = postP.comments
             for comment in comments:
@@ -160,27 +167,29 @@ def search_twitter(keyword):
     twitter_comments.append(tweety)
   '''
 
-def analyze_text(texts):
+def analyze_text(texts,term):
+    interestingText = [] #includes search term and has strong sentiment
     global num_datum, sentiment_sum
     num_datum += len(texts)
     for text in texts:
         compound_sentiment = analyser.polarity_scores(text).get('compound')
+        if compound_sentiment > .5 or compound_sentiment < -.5: 
+            compound_sentiment  *= 2
+            if term.lower() in text.lower(): 
+               interestingText.append(text)
+    
        # print("Tweet: ", text, "\nCompund sentiment: ", compound_sentiment, " - ",
                # interpret_compound_score(compound_sentiment), "\n")
+        
         sentiment_sum += compound_sentiment
     if (num_datum != 0):
-        return sentiment_sum / num_datum
+        return (sentiment_sum / num_datum, interestingText)
     else:
         return "Nothing Found!"
 
 
 
 
-
-#coms = search_google('Feminism')
-search_twitter('Tiger King')
-#print(reddit_urls)
-#geeg = search_reddit(coms)
 
 
 '''
