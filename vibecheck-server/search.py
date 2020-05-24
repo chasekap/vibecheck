@@ -127,7 +127,7 @@ def search_twitter(keyword):
 
   api = tweepy.API(auth, wait_on_rate_limit=True, wait_on_rate_limit_notify=True)
 
-  maxTweets = 1000
+  maxTweets = 100   #Lowered to prevent api cooldown
   tweetsPerQuery = 100
   tweetCount = 0
 
@@ -156,6 +156,8 @@ def search_twitter(keyword):
       tweetCount += len(tweets)
       max_id = tweets[-1].id
 
+  return twitter_comments
+
   '''
   public_tweets = api.search(keyword,count=100)
 
@@ -165,18 +167,25 @@ def search_twitter(keyword):
     twitter_comments.append(tweety)
   '''
 
-def analyze_text(texts):
+def analyze_text(texts,term):
+    interestingText = [] #includes search term and has strong sentiment
     global num_datum, sentiment_sum
     num_datum += len(texts)
     for text in texts:
         compound_sentiment = analyser.polarity_scores(text).get('compound')
         if compound_sentiment > .5 or compound_sentiment < -.5: 
             compound_sentiment  *= 2
-            num_datum += 1
+            if term.lower() in text.lower(): 
+               interestingText.append(text)
+    
        # print("Tweet: ", text, "\nCompund sentiment: ", compound_sentiment, " - ",
                # interpret_compound_score(compound_sentiment), "\n")
         
         sentiment_sum += compound_sentiment
+    if (num_datum != 0):
+        return (sentiment_sum / num_datum, interestingText)
+    else:
+        return "Nothing Found!"
 
 
 
