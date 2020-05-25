@@ -83,9 +83,9 @@ def parse_subreddit(r,reddit_comments,post,hot_flag=True): #query hot instead of
     print(sub)
     #sub = r.subreddit(subr).hot(limit=lim) if hot_flag else r.subreddit(subr).top(limit=lim)
     for post in sub:
-        if len(reddit_comments) >= 1000: 
+        if len(reddit_comments) >= 1000:
                 break
-        
+
         reddit_comments.append(post.selftext)
         post.comment_sort = "top"
         post.comments.replace_more(limit=0)
@@ -100,7 +100,7 @@ def search_reddit(posts):
     r = praw.Reddit(client_id=vars.REDDIT_CLIENT_ID, client_secret=vars.REDDIT_CLIENT_SECRET, user_agent="vibecheck" )
     if posts: #nonempty
         for post in posts:
-            if len(reddit_comments) >= 1000: 
+            if len(reddit_comments) >= 1000:
                 break
             try:
                 postP = r.submission(url=post)
@@ -121,6 +121,8 @@ def search_reddit(posts):
 
 
 def search_twitter(keyword):
+  filter_string = ' -filter:retweets'
+  key = f"{keyword}{filter_string}"
 
   auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
   auth.set_access_token(access_token, access_token_secret)
@@ -140,19 +142,19 @@ def search_twitter(keyword):
   while tweetCount < maxTweets:
       if(max_id <= 0):
           if(not sinceId):
-              tweets = api.search(q=keyword, count=tweetsPerQuery)
+              tweets = api.search(q=key, count=tweetsPerQuery, tweet_mode='extended')
           else:
-              tweets = api.search(q=keyword, count=tweetsPerQuery, since_id=sinceId)
+              tweets = api.search(q=key, count=tweetsPerQuery, since_id=sinceId, tweet_mode='extended')
       else:
           if(not sinceId):
-              tweets = api.search(q=keyword, count=tweetsPerQuery, max_id=str(max_id - 1))
+              tweets = api.search(q=key, count=tweetsPerQuery, max_id=str(max_id - 1), tweet_mode='extended')
           else:
-              tweets = api.search(q=keyword, count=tweetsPerQuery, max_id=str(max_id - 1), since_id=sinceId)
+              tweets = api.search(q=key, count=tweetsPerQuery, max_id=str(max_id - 1), since_id=sinceId, tweet_mode='extended')
       if(not tweets):
           break
       for tweet in tweets:
-          twitter_comments.append(tweet.text)
-          #print(tweet.text + '\n') for testing purposes
+          twitter_comments.append(tweet.full_text)
+          #print(tweet.full_text + '\n') #for testing purposes
       tweetCount += len(tweets)
       max_id = tweets[-1].id
 
@@ -174,10 +176,10 @@ def analyze_text(texts,term):
     for text in texts:
         compound_sentiment = analyser.polarity_scores(text).get('compound')
         sentiment_sum += compound_sentiment
-        if compound_sentiment > .5 or compound_sentiment < -.5: 
+        if compound_sentiment > .5 or compound_sentiment < -.5:
             compound_sentiment  *= 2
-            if term.lower() in text.lower() and len(text) < 1000: 
-               interestingText.append(text)      
+            if term.lower() in text.lower() and len(text) < 1000:
+               interestingText.append(text)
     if (num_datum != 0):
         return (sentiment_sum / num_datum, interestingText)
     else:
@@ -193,3 +195,4 @@ analyze_text(twitter_comments)
 mean_sentiment = sentiment_sum / num_datum
 '''
 #print("Mean Sentiment:", mean_sentiment, " - ", interpret_compound_score(mean_sentiment))
+#search_twitter("Trump")
