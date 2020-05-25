@@ -12,6 +12,17 @@ code {
         monospace;
 }
 
+#html-canvas > span:hover {
+    opacity: 1 !important;
+    font-weight: bolder;
+    cursor: pointer;
+  }
+#html-canvas:hover > span{
+    transform: scale(1.5);
+    font-weight: 900;
+    opacity: 0.5 ;
+  }
+
 .logo {
     font-family: Tahoma, Geneva, sans-serif;
     font-size: 48px;
@@ -20,7 +31,6 @@ code {
     color: #000000;
     font-weight: 400;
     text-decoration: none solid rgb(68, 68, 68);
-    font-style: italic;
     font-variant: small-caps;
     text-transform: lowercase;
 }
