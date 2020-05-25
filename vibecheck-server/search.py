@@ -55,6 +55,7 @@ def search_google(query):
 def word_count(strings): #returns a list of tuples [word,freq] O(n) = nlog(n)
     words = {}
     multiwords = {}
+    maximum = 0
     stops = stopwords.words('english')
     for s in strings:
         s = s.strip(string.punctuation).lower()
@@ -66,31 +67,32 @@ def word_count(strings): #returns a list of tuples [word,freq] O(n) = nlog(n)
             if (word[1] == 'NN' or word[1] == 'NNP' or word[1] == 'ADJ') and word[0] not in blocked: #noun, adjective
                 if word[0] in words:
                     words[word[0]] += 1
-                    if words[word[0]] > 5:
+                    if words[word[0]] > 15:
+                        maximum = max(words[word[0]],maximum)
                         multiwords[word[0]] = words[word[0]]
                 else:
                     words[word[0]] = 1
 
-    return multiwords
+    #return multiwords
+    return [[a[0],(a[1]*.5) * (200/maximum)] for a in multiwords.items()] #normalize the size
 def parse_subreddit(r,reddit_comments,post,hot_flag=True): #query hot instead of top
-
-    lim = 5 #how many posts to return
+    lim = 3 #how many posts to return
     match = re.search('\/r\/(.*?)\/', post) #only name of subreddit
     subr = match.group(1)
-    sub = r.subreddit(subr).top('week',limit=3)
+    sub = r.subreddit(subr).top('week',limit=lim)
+    print(sub)
     #sub = r.subreddit(subr).hot(limit=lim) if hot_flag else r.subreddit(subr).top(limit=lim)
     for post in sub:
-        if len(reddit_comments) >= 1000: 
+        if len(reddit_comments) >= 1000:
                 break
+
         reddit_comments.append(post.selftext)
-        post.comment_sort = 'best'
-        comments = post.comments
+        post.comment_sort = "top"
+        post.comments.replace_more(limit=0)
+        comments = post.comments.list()
         for comment in comments:
-                if isinstance(comment,praw.models.MoreComments):
-                        break
-                        #comments = comment.comments()
-                else:
-                    reddit_comments.append(comment.body)
+                    if comment.score > 1:
+                        reddit_comments.append(comment.body)
 
 
 def search_reddit(posts):
@@ -98,7 +100,7 @@ def search_reddit(posts):
     r = praw.Reddit(client_id=vars.REDDIT_CLIENT_ID, client_secret=vars.REDDIT_CLIENT_SECRET, user_agent="vibecheck" )
     if posts: #nonempty
         for post in posts:
-            if len(reddit_comments) >= 1000: 
+            if len(reddit_comments) >= 1000:
                 break
             try:
                 postP = r.submission(url=post)
@@ -108,19 +110,19 @@ def search_reddit(posts):
                 except:
                    continue
                 continue
-            postP.comment_sort = 'best'
+            postP.comment_sort = "top"
             reddit_comments.append(postP.selftext)
-            comments = postP.comments
+            postP.comments.replace_more(limit=0)
+            comments = postP.comments.list()
             for comment in comments:
-                if isinstance(comment,praw.models.MoreComments):
-                        break
-                        #comments = comment.comments()
-                else:
-                    reddit_comments.append(comment.body)
+                    if comment.score > 1:
+                        reddit_comments.append(comment.body)
     return reddit_comments
 
 
 def search_twitter(keyword):
+  filter_string = ' -filter:retweets'
+  key = f"{keyword}{filter_string}"
 
   auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
   auth.set_access_token(access_token, access_token_secret)
@@ -140,19 +142,19 @@ def search_twitter(keyword):
   while tweetCount < maxTweets:
       if(max_id <= 0):
           if(not sinceId):
-              tweets = api.search(q=keyword, count=tweetsPerQuery)
+              tweets = api.search(q=key, count=tweetsPerQuery, tweet_mode='extended')
           else:
-              tweets = api.search(q=keyword, count=tweetsPerQuery, since_id=sinceId)
+              tweets = api.search(q=key, count=tweetsPerQuery, since_id=sinceId, tweet_mode='extended')
       else:
           if(not sinceId):
-              tweets = api.search(q=keyword, count=tweetsPerQuery, max_id=str(max_id - 1))
+              tweets = api.search(q=key, count=tweetsPerQuery, max_id=str(max_id - 1), tweet_mode='extended')
           else:
-              tweets = api.search(q=keyword, count=tweetsPerQuery, max_id=str(max_id - 1), since_id=sinceId)
+              tweets = api.search(q=key, count=tweetsPerQuery, max_id=str(max_id - 1), since_id=sinceId, tweet_mode='extended')
       if(not tweets):
           break
       for tweet in tweets:
-          twitter_comments.append(tweet.text)
-          #print(tweet.text + '\n') for testing purposes
+          twitter_comments.append(tweet.full_text)
+          #print(tweet.full_text + '\n') #for testing purposes
       tweetCount += len(tweets)
       max_id = tweets[-1].id
 
@@ -173,15 +175,11 @@ def analyze_text(texts,term):
     num_datum += len(texts)
     for text in texts:
         compound_sentiment = analyser.polarity_scores(text).get('compound')
-        if compound_sentiment > .5 or compound_sentiment < -.5: 
-            compound_sentiment  *= 2
-            if term.lower() in text.lower(): 
-               interestingText.append(text)
-    
-       # print("Tweet: ", text, "\nCompund sentiment: ", compound_sentiment, " - ",
-               # interpret_compound_score(compound_sentiment), "\n")
-        
         sentiment_sum += compound_sentiment
+        if compound_sentiment > .5 or compound_sentiment < -.5:
+            compound_sentiment  *= 2
+            if term.lower() in text.lower() and len(text) < 1000:
+               interestingText.append(text)
     if (num_datum != 0):
         return (sentiment_sum / num_datum, interestingText)
     else:
@@ -197,3 +195,4 @@ analyze_text(twitter_comments)
 mean_sentiment = sentiment_sum / num_datum
 '''
 #print("Mean Sentiment:", mean_sentiment, " - ", interpret_compound_score(mean_sentiment))
+#search_twitter("Trump")
