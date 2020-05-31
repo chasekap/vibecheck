@@ -3,6 +3,7 @@ import React, { Component } from "react";
 import ReactDOM from "react-dom";
 import Wordcloud from "wordcloud";
 import { Menu, Grid, Search } from "semantic-ui-react";
+import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 import "./index.css";
 import "semantic-ui-css/semantic.min.css";
 
@@ -54,10 +55,19 @@ class SimpCloud extends React.Component {
 class SearchPage extends React.Component {
     render() {
         return (
-            <div>
-                <HeaderMenu />
-                <ContentSearch />
-            </div>
+            <Router>
+                <div>
+                    <HeaderMenu />
+                    <Switch>
+                        <Route exact path="/">
+                            <ContentSearch />
+                        </Route>
+                        <Route path="/trends">
+                            <ContentTrends />
+                        </Route>
+                    </Switch>
+                </div>
+            </Router>
         );
     }
 }
@@ -75,6 +85,8 @@ class HeaderMenu extends React.Component {
         return (
             <Menu>
                 <Menu.Item
+                    as={Link}
+                    to="/"
                     name="search"
                     active={activeItem === "search"}
                     onClick={this.handleItemClick}
@@ -83,6 +95,8 @@ class HeaderMenu extends React.Component {
                 </Menu.Item>
 
                 <Menu.Item
+                    as={Link}
+                    to="/trends"
                     name="trends"
                     active={activeItem === "trends"}
                     onClick={this.handleItemClick}
@@ -238,6 +252,16 @@ class ContentSearch extends React.Component {
         this.setState({
             interesting_text: this.state.int_texts[index],
         });
+    }
+}
+
+class ContentTrends extends React.Component {
+    render() {
+        return (
+            <div>
+                Trends
+            </div>
+        );
     }
 }
 

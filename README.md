@@ -26,10 +26,12 @@ First, install MySQL on your computer if you don't have it.
 macOS: `brew install mysql`
 Windows: `choco install mysql`
 
-Now, start up a local MySQL server with `mysql.server start`. On the first run of this server, you'll need to follow some
-extra steps. Otherwise, you're done! You can stop the server with `mysql.server stop` and start the Flask server.
+Both of these sources set the root account of the locally-hosted MySQL server to be passwordless by default.
 
-If this is the first time the server's been run, you'll want to run `mysql -u root` to access the MySQL monitor. Then,
+Now, start up a local MySQL server with `mysql.server start`. On the first run of this server, you'll need to follow some
+extra steps. Otherwise, you're done! You can stop the server with `mysql.server stop` or move forward with starting the Flask server.
+
+If this is the first time the MySQL server's been run, you'll want to run `mysql -u root` to access the MySQL monitor. Then,
 run the instruction `CREATE DATABASE vibecheck_db;`, semicolon and upper/lower case included.
 
 Now that the database has been created, run `exit`. The server will still be runnning and you can now start the Flask server.
