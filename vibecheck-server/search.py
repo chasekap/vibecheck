@@ -8,6 +8,7 @@ import vars
 import sys
 import os
 
+from newsapi import NewsApiClient
 from nltk.corpus import stopwords
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 
@@ -27,8 +28,8 @@ consumer_secret = vars.TWITTER_SECRET_KEY
 access_token = vars.ACCESS_TOKEN
 access_token_secret = vars.ACCESS_TOKEN_SECRET
 
-
-
+#newsapi auth
+news_api_key = vars.NEWS_KEY
 
 analyser = SentimentIntensityAnalyzer()
 num_datum = 0
@@ -159,6 +160,53 @@ def search_twitter(keyword):
       max_id = tweets[-1].id
 
   return twitter_comments
+
+
+'''
+#Facebook API no longer supports functionality needed
+
+
+token = 'EAANxQwQsTxsBACcLZBnNTJ7HL2z5VZAGhBbwXNYRsAaUxJLcP6ZAiABI8CQZBFrwKiEEKiH4dirf28FPlA3PN3er9dyuXBjmd1sbIn6XT6Tm3G10dFuBWOkQg0utHX3msI4NCOL0ydAZAcoZCR4SxWPlYZCI7nYnTxlqowwfDRtKKeMWjTecIQbCwZC6ooVBRfXeFC7OZCPhBxwFXrijzZBUAE60yBeg5LJCBM8ujKIGtPDgP8qRNUs8aE'
+
+def search_facebook(keyword):
+    facebook_posts = []
+
+    graph = facebook.GraphAPI(access_token=token, version=7.0)
+    posts = graph.request('search?q=keyword&type=event&limit=10') #error here, might not work because cant search for posts
+    post_list = posts['data']
+
+    list_size = len(post_list)
+
+    for post_num in list_size:
+        post_id = post_list[post_num]['id']
+        post_object = graph.get_object(id=post_id, fields='caption')
+        caption = post_object['caption']
+        print(caption)
+        facebook_posts.append(caption)
+
+
+search_facebook('covid')
+'''
+
+#todo -add more specific functions to search individual news sources, update dates automatically,
+#merge relevancy and popularity results for better results
+def search_all_news(keyword):
+    newsapi = NewsApiClient(api_key=news_api_key)
+    article_list = []
+
+    all_articles = newsapi.get_everything(q=keyword,
+                                      from_param='2020-05-29',
+                                      to='2020-05-31',
+                                      language='en',
+                                      sort_by='popularity',
+                                      page=1, page_size=100)
+
+    for article in all_articles['articles']:
+        article_list.append(article['description'])
+        #print(article['description'] + '\n')
+
+    return article_list
+
 
   '''
   public_tweets = api.search(keyword,count=100)
