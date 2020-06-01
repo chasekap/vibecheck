@@ -12,6 +12,8 @@ db = SQLAlchemy(app)
 
 @app.route('/search/<search>/<sites>')
 def search_request(search, sites):
+    #if('obama' in search.lower()):
+        #easter egg
 
     db.create_all()
     #tweets = s.search_twitter(search)

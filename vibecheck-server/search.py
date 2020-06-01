@@ -9,6 +9,7 @@ import sys
 import os
 
 from newsapi import NewsApiClient
+from datetime import date, timedelta
 from nltk.corpus import stopwords
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 
@@ -30,6 +31,10 @@ access_token_secret = vars.ACCESS_TOKEN_SECRET
 
 #newsapi auth
 news_api_key = vars.NEWS_KEY
+
+#dates used for article retrieval
+end_date = date.today()
+start_date = date.today() - timedelta(days=25)
 
 analyser = SentimentIntensityAnalyzer()
 num_datum = 0
@@ -194,14 +199,30 @@ def search_all_news(keyword):
     article_list = []
 
     all_articles = newsapi.get_everything(q=keyword,
-                                      from_param='2020-05-29',
-                                      to='2020-05-31',
+                                      from_param=start_date,
+                                      to=end_date,
                                       language='en',
                                       sort_by='popularity',
                                       page=1, page_size=100)
 
     for article in all_articles['articles']:
         article_list.append(article['description'])
+        #print(article['description'] + '\n')
+
+    return article_list
+
+
+def search_top_news(keyword):
+    newsapi = NewsApiClient(api_key=news_api_key)
+    article_list = []
+
+        all_articles = newsapi.get_top_headlines(q=keyword,
+                                          language='en',
+                                          page=1, page_size=100)
+
+    for article in all_articles['articles']:
+        article_list.append(article['description'])
+        article_list.append(article['content'])
         #print(article['description'] + '\n')
 
     return article_list
@@ -223,10 +244,10 @@ def analyze_text(texts,term):
     for text in texts:
         compound_sentiment = analyser.polarity_scores(text).get('compound')
 <<<<<<< HEAD
-        if compound_sentiment > .5 or compound_sentiment < -.5: 
+        if compound_sentiment > .5 or compound_sentiment < -.5:
             compound_sentiment  *= 2
-            if term.lower() in text.lower() and len(text) < 1000: 
-               interestingText.append(text)      
+            if term.lower() in text.lower() and len(text) < 1000:
+               interestingText.append(text)
         sentiment_sum += compound_sentiment
 =======
         sentiment_sum += compound_sentiment
