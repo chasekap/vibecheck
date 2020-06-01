@@ -8,7 +8,8 @@ import vars
 import sys
 import os
 
-# from newsapi import NewsApiClient
+from newsapi import NewsApiClient
+from datetime import date, timedelta
 from nltk.corpus import stopwords
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 
@@ -32,6 +33,10 @@ access_token_secret = vars.ACCESS_TOKEN_SECRET
 
 # newsapi auth
 news_api_key = vars.NEWS_KEY
+
+# dates used for article retrieval
+end_date = date.today()
+start_date = date.today() - timedelta(days=25)
 
 analyser = SentimentIntensityAnalyzer()
 num_datum = 0
@@ -138,7 +143,7 @@ def search_twitter(keyword):
     auth.set_access_token(access_token, access_token_secret)
 
     api = tweepy.API(auth, wait_on_rate_limit=True,
-                    wait_on_rate_limit_notify=True)
+                     wait_on_rate_limit_notify=True)
 
     maxTweets = 100  # Lowered to prevent api cooldown
     tweetsPerQuery = 100
@@ -161,7 +166,7 @@ def search_twitter(keyword):
         else:
             if (not sinceId):
                 tweets = api.search(q=key, count=tweetsPerQuery, max_id=str(
-                max_id - 1), tweet_mode='extended')
+                    max_id - 1), tweet_mode='extended')
             else:
                 tweets = api.search(q=key,
                                     count=tweetsPerQuery,
@@ -181,15 +186,18 @@ def search_twitter(keyword):
 # todo -add more specific functions to search individual news sources, update dates automatically,
 # merge relevancy and popularity results for better results
 
+
 '''
 def search_all_news(keyword):
     newsapi = NewsApiClient(api_key=news_api_key)
     article_list = []
 
-    all_articles = newsapi.get_everything(
-        q=keyword, from_param='2020-05-29', 
-        to='2020-05-31', language='en', 
-        sort_by='popularity', page=1, page_size=100)
+    all_articles = newsapi.get_everything(q=keyword,
+                                      from_param=start_date,
+                                      to=end_date,
+                                      language='en',
+                                      sort_by='popularity',
+                                      page=1, page_size=100)
 
     for article in all_articles['articles']:
         article_list.append(article['description'])
@@ -197,6 +205,22 @@ def search_all_news(keyword):
 
     return article_list
 '''
+
+
+def search_top_news(keyword):
+    newsapi = NewsApiClient(api_key=news_api_key)
+    article_list = []
+    all_articles = newsapi.get_top_headlines(q=keyword,
+                                             language='en',
+                                             page=1, page_size=100)
+
+    for article in all_articles['articles']:
+        article_list.append(article['description'])
+        article_list.append(article['content'])
+        #print(article['description'] + '\n')
+
+    return article_list
+
 
 '''
 public_tweets = api.search(keyword,count=100)
@@ -213,6 +237,11 @@ def analyze_text(texts, term):
     num_datum += len(texts)
     for text in texts:
         compound_sentiment = analyser.polarity_scores(text).get('compound')
+        if compound_sentiment > .5 or compound_sentiment < -.5:
+            compound_sentiment *= 2
+            if term.lower() in text.lower() and len(text) < 1000:
+                interestingText.append(text)
+        sentiment_sum += compound_sentiment
         sentiment_sum += compound_sentiment
         if compound_sentiment > .5 or compound_sentiment < -.5:
             compound_sentiment *= 2
