@@ -2,6 +2,7 @@ import search as s
 from flask import Flask
 from flask import request
 from flask_sqlalchemy import SQLAlchemy
+import datetime
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root@localhost:3306/vibecheck_db'
@@ -29,7 +30,7 @@ def search_request(search):
 
     }
 
-    search_db_entry = UserSearch(search=search)
+    search_db_entry = UserSearch(search=search, datetime=datetime.datetime.now())
 
     db.session.add(search_db_entry)
     db.session.commit()
@@ -39,7 +40,8 @@ def search_request(search):
 
 class UserSearch(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    search = db.Column(db.String(280), unique=True, nullable=False)
+    search = db.Column(db.String(280), unique=False, nullable=False)
+    datetime = db.Column(db.String(48), unique=True, nullable=False)
 
     def __repr__(self):
         return '<Search %r>' % self.search

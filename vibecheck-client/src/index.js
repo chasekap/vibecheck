@@ -3,7 +3,7 @@ import React, { Component } from "react";
 import ReactDOM from "react-dom";
 import Wordcloud from "wordcloud";
 import { Menu, Grid, Search } from "semantic-ui-react";
-import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
+import { BrowserRouter as Router, Switch, Route, Link, useLocation } from "react-router-dom";
 import "./index.css";
 import "semantic-ui-css/semantic.min.css";
 
@@ -64,6 +64,9 @@ class SearchPage extends React.Component {
                         </Route>
                         <Route path="/trends">
                             <ContentTrends />
+                        </Route>
+                        <Route path="*">
+                            <ContentInvalid />
                         </Route>
                     </Switch>
                 </div>
@@ -260,6 +263,17 @@ class ContentTrends extends React.Component {
         return (
             <div>
                 Trends
+            </div>
+        );
+    }
+}
+
+
+class ContentInvalid extends React.Component {
+    render() {
+        return (
+            <div>
+                404: Page not found! Try going to one of the pages linked on the header.
             </div>
         );
     }
