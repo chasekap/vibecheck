@@ -2,8 +2,14 @@ import _ from "lodash";
 import React, { Component } from "react";
 import ReactDOM from "react-dom";
 import Wordcloud from "wordcloud";
-import { Menu, Grid, Search } from "semantic-ui-react";
-import { BrowserRouter as Router, Switch, Route, Link, useLocation } from "react-router-dom";
+import { Dropdown, Menu, Grid, Search } from "semantic-ui-react";
+import {
+    BrowserRouter as Router,
+    Switch,
+    Route,
+    Link,
+    useLocation,
+} from "react-router-dom";
 import "./index.css";
 import "semantic-ui-css/semantic.min.css";
 
@@ -28,19 +34,19 @@ class SimpCloud extends React.Component {
             list: list,
             color: "#000000",
             fontFamily: "Tahoma, Geneva, sans-serif",
-            drawOutOfBound: true,
+            drawOutOfBound: false,
         });
     }
 
     render() {
-        if (this.props.word_vis === true) {
+        if (this.props.word_vis == true) {
             return (
                 <div>
                     <div
                         id="html-canvas"
                         ref="my-canvas"
                         style={{
-                            width: this.props.words.length * 8,
+                            width: this.props.words.length * 16,
                             height: this.props.words.length * 8,
                         }}
                     />
@@ -225,7 +231,7 @@ class ContentSearch extends React.Component {
     }
 
     getData(search) {
-        fetch(`/search/${search}`)
+        fetch(`/search/${search}/reddit`)
             .then((res) => res.json())
             .then((data) => {
                 console.log(data);
@@ -260,20 +266,16 @@ class ContentSearch extends React.Component {
 
 class ContentTrends extends React.Component {
     render() {
-        return (
-            <div>
-                Trends
-            </div>
-        );
+        return <div>Trends</div>;
     }
 }
-
 
 class ContentInvalid extends React.Component {
     render() {
         return (
             <div>
-                404: Page not found! Try going to one of the pages linked on the header.
+                404: Page not found! Try going to one of the pages linked on the
+                header.
             </div>
         );
     }

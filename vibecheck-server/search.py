@@ -80,7 +80,6 @@ def parse_subreddit(r,reddit_comments,post,hot_flag=True): #query hot instead of
     match = re.search('\/r\/(.*?)\/', post) #only name of subreddit
     subr = match.group(1)
     sub = r.subreddit(subr).top('week',limit=lim)
-    print(sub)
     #sub = r.subreddit(subr).hot(limit=lim) if hot_flag else r.subreddit(subr).top(limit=lim)
     for post in sub:
         if len(reddit_comments) >= 1000:
@@ -175,17 +174,23 @@ def analyze_text(texts,term):
     num_datum += len(texts)
     for text in texts:
         compound_sentiment = analyser.polarity_scores(text).get('compound')
+<<<<<<< HEAD
+        if compound_sentiment > .5 or compound_sentiment < -.5: 
+            compound_sentiment  *= 2
+            if term.lower() in text.lower() and len(text) < 1000: 
+               interestingText.append(text)      
+        sentiment_sum += compound_sentiment
+=======
         sentiment_sum += compound_sentiment
         if compound_sentiment > .5 or compound_sentiment < -.5:
             compound_sentiment  *= 2
             if term.lower() in text.lower() and len(text) < 1000:
                interestingText.append(text)
+>>>>>>> 9a1c7107878ba5f21624c30f0ca9d30dbdacaf0f
     if (num_datum != 0):
         return (sentiment_sum / num_datum, interestingText)
     else:
         return "Nothing Found!"
-
-
 
 
 

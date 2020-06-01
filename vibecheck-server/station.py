@@ -10,8 +10,8 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
 
-@app.route('/search/<search>')
-def search_request(search):
+@app.route('/search/<search>/<sites>')
+def search_request(search, sites):
 
     db.create_all()
     #tweets = s.search_twitter(search)
@@ -26,11 +26,13 @@ def search_request(search):
         "avg_sentiment": avg_sentiment,
         "word_count": word_count,
         "comments": len(coms),
-        "sample": sample
+        "sample": sample,
+        "sites": sites
 
     }
 
-    search_db_entry = UserSearch(search=search, datetime=datetime.datetime.now())
+    search_db_entry = UserSearch(
+        search=search, datetime=datetime.datetime.now())
 
     db.session.add(search_db_entry)
     db.session.commit()
