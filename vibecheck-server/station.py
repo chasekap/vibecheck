@@ -10,12 +10,13 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
 
-@app.route('/search/<search>/<sites>')
-def search_request(search, sites):
-    #if('obama' in search.lower()):
-        #easter egg
-
+@app.before_first_request
+def initial():
     db.create_all()
+
+
+@app.route('/search/<search>')
+def search_request(search):
     #tweets = s.search_twitter(search)
     #articles = s.search_all_news(search)
     urls = s.search_google(search)
@@ -29,13 +30,11 @@ def search_request(search, sites):
         "avg_sentiment": avg_sentiment,
         "word_count": word_count,
         "comments": len(coms),
-        "sample": sample,
-        "sites": sites
-
+        "sample": sample
     }
 
     search_db_entry = UserSearch(
-        search=search, datetime=datetime.datetime.now())
+        search=search, score=avg_sentiment)
 
     db.session.add(search_db_entry)
     db.session.commit()
@@ -46,7 +45,8 @@ def search_request(search, sites):
 class UserSearch(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     search = db.Column(db.String(280), unique=False, nullable=False)
-    datetime = db.Column(db.String(48), unique=True, nullable=False)
+    time = db.Column(db.DateTime, nullable=False, default=datetime.datetime.now())
+    score = db.Column(db.Float, unique=False, nullable=False)
 
     def __repr__(self):
         return '<Search %r>' % self.search

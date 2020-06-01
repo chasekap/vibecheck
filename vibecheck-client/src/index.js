@@ -58,7 +58,7 @@ class SimpCloud extends React.Component {
     }
 }
 
-class SearchPage extends React.Component {
+class Page extends React.Component {
     render() {
         return (
             <Router>
@@ -120,17 +120,8 @@ class InterestingText extends React.Component {
     render() {
         if (this.props.text_vis) {
             return (
-                <>
-                    <Grid.Row
-                        fixed="true"
-                        centered
-                        style={{ padding: "20pt 0 0 0" }}
-                    >
-                        <div style={{ padding: "0 0 0 5pt" }}>
-                            {this.props.int_text}
-                        </div>
-                    </Grid.Row>
-                    <Grid.Row style={{ padding: "10pt 0 0 0" }} centered>
+                <Grid container>
+                    <Grid.Row style={{ padding: "40pt 0 0 0" }} centered>
                         <button
                             className="ui icon button mini"
                             onClick={this.props.refreshText}
@@ -139,7 +130,16 @@ class InterestingText extends React.Component {
                             <i className="undo icon"></i>
                         </button>
                     </Grid.Row>
-                </>
+                    <Grid.Row
+                        fixed="true"
+                        centered
+                        style={{ padding: "10pt 0 0 0" }}
+                    >
+                        <div style={{ padding: "0 0 0 5pt" }}>
+                            {this.props.int_text}
+                        </div>
+                    </Grid.Row>
+                </Grid>
             );
         } else {
             return (
@@ -231,7 +231,7 @@ class ContentSearch extends React.Component {
     }
 
     getData(search) {
-        fetch(`/search/${search}/reddit`)
+        fetch(`/search/${search}`)
             .then((res) => res.json())
             .then((data) => {
                 console.log(data);
@@ -281,4 +281,4 @@ class ContentInvalid extends React.Component {
     }
 }
 
-ReactDOM.render(<SearchPage />, document.getElementById("root"));
+ReactDOM.render(<Page />, document.getElementById("root"));
