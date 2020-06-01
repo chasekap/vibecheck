@@ -14,7 +14,55 @@ or visit https://classic.yarnpkg.com/en/docs/install/#windows-stable
 
 There are two parts to this repository: a React web app in `/vibecheck-client` and a Flask web server in `/vibecheck-server`.
 
+### MySQL Database
+
+By default, the Flask server is set up to work with a database that's locally hosted and accessed with a passwordless root account. If you'd like to change this, edit the URI that is assigned to `app.config['SQLALCHEMY_DATABASE_URI']` in `station.py`.
+
+Additionally, you can add a password to the root account if you'd like. Just keep in mind that you'll have to add `:[PASSWORD]`
+after the username in the MySQL URI.
+
+First, install MySQL on your computer if you don't have it.
+
+macOS: `brew install mysql`
+Windows: `choco install mysql`
+
+Both of these sources set the root account of the locally-hosted MySQL server to be passwordless by default.
+
+Now, start up a local MySQL server with `mysql.server start`. On the first run of this server, you'll need to follow some
+extra steps. Otherwise, you're done! You can stop the server with `mysql.server stop` or move forward with starting the Flask server.
+
+If this is the first time the MySQL server's been run, you'll want to run `mysql -u root` to access the MySQL monitor. Then,
+run the instruction `CREATE DATABASE vibecheck_db;`, semicolon and upper/lower case included.
+
+Now that the database has been created, run `exit`. The server will still be runnning and you can now start the Flask server.
+
+### Web Server
+
+First, `cd` into `vibecheck/vibecheck-server`; then set up the Python virtual environment with `python3 -m venv venv`.
+
+Then, launch the virtual environment:
+
+For Mac: `source venv/bin/activate`  
+
+For Windows: `source venv/Scripts/activate` (Git Bash) or `.\venv\Scripts\activate` (cmd)
+
+While the venv is active, run `pip install -r requirements.txt`
+and to get the required NLTK modules run `python -m nltk.downloader stopwords punkt averaged_perceptron_tagger`
+
+Run `pip install python-dotenv` to include the .flaskenv/.env files.
+
+You should also set the environmental variable FLASK_APP to `station.py`
+
+`export FLASK_APP=station.py` (in Bash)
+
+Run `yarn start-api` to start flask localhost on Windows  
+Run `yarn start-api-m` to start flask localhost on Mac
+
+_If you need to add a new dependency, run `pip install [module]` and then run `pip freeze > requirements.txt`._
+
 ### React App
+In a new terminal window:
+
 To be able to run the React web app, you need to have `npm` installed (included with Node.js).
 
 First, `cd` into `vibecheck/vibecheck-client`.
@@ -24,95 +72,3 @@ Run `npm install`.
 Then, run `yarn start` to start the react localhost.
 
 _If you need to add a new dependency, run `npm install [module] --save`_
-
-### Web Server
-Now, in a new terminal window:
-
-First, `cd` into `vibecheck/vibecheck-server`; then set up the Python virtual environment with `python3 -m venv venv`.
-
-Then, launch the virtual environment:
-For Mac: 
-  ` source venv/bin/activate `  
-For Windows:
-  `source venv/Scripts/activate` (Git Bash) or `.\venv\Scripts\activate` (cmd)
-
-While the venv is active, run `pip install -r requirements.txt`
-and to get the required NLTK modules run `python -m nltk.downloader stopwords punkt averaged_perceptron_tagger`
-
-Run `pip install python-dotenv` to include the .flaskenv/.env files.
-
-You should also set the environmental variable FLASK_APP = station.py
-'export FLASK_APP=station.py' (in Bash)
-
-Run `yarn start-api` to start flask localhost on Windows  
-Run `yarn start-api-m` to start flask localhost on Mac    
-
-## More information from Create React App README:
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
-
-### Available Scripts
-
-In the project directory, you can run:
-
-#### `yarn start`
-
-Runs the app in the development mode.<br />
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
-
-The page will reload if you make edits.<br />
-You will also see any lint errors in the console.
-
-#### `yarn test`
-
-Launches the test runner in the interactive watch mode.<br />
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-#### `yarn build`
-
-Builds the app for production to the `build` folder.<br />
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.<br />
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-#### `yarn eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-### Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-#### Code Splitting
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/code-splitting
-
-#### Analyzing the Bundle Size
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size
-
-#### Making a Progressive Web App
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app
-
-#### Advanced Configuration
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/advanced-configuration
-
-#### Deployment
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/deployment
-
-#### `yarn build` fails to minify
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
