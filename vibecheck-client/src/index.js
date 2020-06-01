@@ -2,7 +2,7 @@ import _ from "lodash";
 import React, {Component} from "react";
 import ReactDOM from "react-dom";
 import Wordcloud from 'wordcloud';
-import { Menu, Grid, Search } from "semantic-ui-react";
+import { Dropdown, Menu, Grid, Search } from "semantic-ui-react";
 import "./index.css";
 import "semantic-ui-css/semantic.min.css";
 
@@ -30,7 +30,7 @@ class SimpCloud extends React.Component {
       const list = this.props.words;
       Wordcloud(
         this.refs["my-canvas"],
-        {list: list,color: '#000000',fontFamily:'Tahoma, Geneva, sans-serif',drawOutOfBound:true}
+        {list: list,color: '#000000',fontFamily:'Tahoma, Geneva, sans-serif',drawOutOfBound:false}
 
       );
       
@@ -39,7 +39,7 @@ class SimpCloud extends React.Component {
     render() {
       if (this.props.word_vis == true){
       return (<div>
-        <div id="html-canvas" ref="my-canvas" style={{width:this.props.words.length * 8,height:this.props.words.length * 8}}/>
+        <div id="html-canvas" ref="my-canvas" style={{width:this.props.words.length * 16,height:this.props.words.length * 8}}/>
       </div>)
       }
       else{
@@ -196,7 +196,7 @@ class ContentSearch extends React.Component {
     }
 
     getData(search) {
-        fetch(`/search/${search}`)
+        fetch(`/search/${search}/reddit`)
             .then((res) => res.json())
             .then((data) => {
                 console.log(data);

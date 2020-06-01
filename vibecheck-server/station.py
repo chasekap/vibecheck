@@ -4,8 +4,8 @@ from flask import request
 
 app = Flask(__name__)
 
-@app.route('/search/<search>')
-def search_request(search):
+@app.route('/search/<search>/<sites>')
+def search_request(search,sites):
 
     #tweets = s.search_twitter(search)
     urls = s.search_google(search)
@@ -19,7 +19,8 @@ def search_request(search):
         "avg_sentiment": avg_sentiment,
         "word_count": word_count,
         "comments" : len(coms),
-        "sample" : sample
+        "sample" : sample,
+        "sites": sites
         
     }
     return output_dict
