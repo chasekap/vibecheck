@@ -2,14 +2,12 @@
   "name": "vibecheck-server",
   "version": "0.1.0",
   "private": true,
-  "dependencies": {
-  },
+  "dependencies": {},
   "scripts": {
     "start-api": "venv/Scripts/flask run",
     "start-api-m": "venv/bin/flask run"
   },
-  "eslintConfig": {
-  },
+  "eslintConfig": {},
   "browserslist": {
     "production": [
       ">0.2%",
