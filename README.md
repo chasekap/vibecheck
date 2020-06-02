@@ -34,7 +34,13 @@ extra steps. Otherwise, you're done! You can stop the server with `mysql.server 
 If this is the first time the MySQL server's been run, you'll want to run `mysql -u root` to access the MySQL monitor. Then,
 run the instruction `CREATE DATABASE vibecheck_db;`, semicolon and upper/lower case included.
 
-Now that the database has been created, run `exit`. The server will still be runnning and you can now start the Flask server.
+Now that the database has been created, run `exit`. The server will still be runnning and you can now start the Flask server.  
+
+If you're experiencing a Flask error relating to the DB, you'll likely need to delete vibecheck_db's user_search table and let flask reinitialize it.  
+
+To do this from the command line, run `mysql -u root`, then `connect vibecheck_db;`, then `DROP TABLE user_search;`
+
+
 
 ### Web Server
 
