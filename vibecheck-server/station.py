@@ -3,6 +3,7 @@ from flask import Flask
 from flask import request
 from flask_sqlalchemy import SQLAlchemy
 import datetime
+import pickle
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root@localhost:3306/vibecheck_db'
@@ -10,15 +11,19 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
 
-@app.route('/search/<search>/<sites>')
-def search_request(search, sites):
-
+@app.before_first_request
+def initial():
     db.create_all()
+
+
+@app.route('/search/<search>')
+def search_request(search):
     #tweets = s.search_twitter(search)
+    #articles = s.search_all_news(search)
     urls = s.search_google(search)
     # urls = ["https://www.reddit.com/r/SFGiants/","https://www.reddit.com/r/Politics/"] <-- good way to test if out of searches
     coms = s.search_reddit(urls)
-    avg_sentiment, sample = s.analyze_text(coms, search)
+    avg_sentiment, sample = s.analyze_text(coms,search)
 
     word_count = s.word_count(coms)
     output_dict = {
@@ -26,13 +31,17 @@ def search_request(search, sites):
         "avg_sentiment": avg_sentiment,
         "word_count": word_count,
         "comments": len(coms),
-        "sample": sample,
-        "sites": sites
-
+        "sample": sample
     }
 
     search_db_entry = UserSearch(
-        search=search, datetime=datetime.datetime.now())
+        search=search, 
+        urls=urls,
+        avg_sentiment = avg_sentiment,
+        word_count = word_count,
+        comments = len(coms),
+        sample = sample
+        )
 
     db.session.add(search_db_entry)
     db.session.commit()
@@ -43,7 +52,12 @@ def search_request(search, sites):
 class UserSearch(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     search = db.Column(db.String(280), unique=False, nullable=False)
-    datetime = db.Column(db.String(48), unique=True, nullable=False)
+    time = db.Column(db.String(48), nullable=False, default=datetime.datetime.utcnow)
+    urls = db.Column(db.PickleType)
+    avg_sentiment = db.Column(db.Float, unique=False)
+    word_count = db.Column(db.PickleType)
+    comments = db.Column(db.Integer, unique=False)
+    sample = db.Column(db.PickleType)
 
     def __repr__(self):
         return '<Search %r>' % self.search
