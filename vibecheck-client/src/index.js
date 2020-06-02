@@ -2,7 +2,14 @@ import _ from "lodash";
 import React, { Component } from "react";
 import ReactDOM from "react-dom";
 import Wordcloud from "wordcloud";
-import { Dropdown, Menu, Grid, Search } from "semantic-ui-react";
+import {
+    Dropdown,
+    Menu,
+    Grid,
+    Search,
+    Container,
+    Header,
+} from "semantic-ui-react";
 import { Slider } from "react-semantic-ui-range";
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 import "./index.css";
@@ -35,7 +42,7 @@ class SimpCloud extends React.Component {
     render() {
       if (this.props.word_vis == true){
       return (<div>
-        <div id="html-canvas" ref="my-canvas" style={{width:this.props.words.length * 16,height:this.props.words.length * 8}}/>
+        <div id="html-canvas" ref="my-canvas" style={{width:this.props.words.length * 8,height:this.props.words.length * 8}}/>
       </div>)
       }
       else{
@@ -45,7 +52,7 @@ class SimpCloud extends React.Component {
     }
 }
 
-class SearchPage extends React.Component {
+class Page extends React.Component {
     constructor(props) {  //this is now the parent component of HeaderMenu and Search
         super(props);
 
@@ -77,6 +84,9 @@ class SearchPage extends React.Component {
                         <Route path="/trends">
                             <ContentTrends />
                         </Route>
+                        <Route path="/info">
+                            <ContentInfo />
+                        </Route>
                     </Switch>
                 </div>
             </Router>
@@ -99,8 +109,6 @@ class HeaderMenu extends React.Component {
         return (
         
                <Menu>
-                   
-
                <Menu.Item
                    as={Link}
                    to="/"
@@ -109,6 +117,15 @@ class HeaderMenu extends React.Component {
                    onClick={this.handleItemClick}
                >
                    Search
+               </Menu.Item>
+               <Menu.Item
+                   as={Link}
+                   to="/trends"
+                   name="trends"
+                   active={activeItem === "trends"}
+                   onClick={this.handleItemClick}
+               >
+                   Trends
                </Menu.Item>
                <Menu.Item
                 class="icon"> 
@@ -121,16 +138,18 @@ class HeaderMenu extends React.Component {
     </div>
                </Menu.Item>
 
-               <Menu.Item
-                   position="right"
-                   as={Link}
-                   to="/trends"
-                   name="trends"
-                   active={activeItem === "trends"}
-                   onClick={this.handleItemClick}
-               >
-                   Trends
-               </Menu.Item>
+               
+               <Menu.Menu position="right">
+                    <Menu.Item
+                        as={Link}
+                        to="/info"
+                        name="info"
+                        active={activeItem === "info"}
+                        onClick={this.handleItemClick}
+                    >
+                        Warnings and Policies
+                    </Menu.Item>
+                </Menu.Menu>
            </Menu>
         );
     }
@@ -182,6 +201,7 @@ class ContentSearch extends React.Component {
         this.int_texts = [];
         this.word_cloud = [];
         this.word_vis = false;
+        this.search_loading = false;
     }
 
     handleSearchChange = (e, { value }) => {
@@ -218,7 +238,7 @@ class ContentSearch extends React.Component {
                 <Grid.Row centered style={{ padding: "50pt 0 0 0" }}>
                     <Search
                         className="search-bar"
-                        loading={this.state.isLoading}
+                        loading={this.state.search_loading}
                         placeholder="what's on your mind?"
                         onSearchChange={_.debounce(
                             this.handleSearchChange,
@@ -240,19 +260,28 @@ class ContentSearch extends React.Component {
                         {"Vibes: " + this.state.sentiment_string}
                     </div>
                 </Grid.Row>
-                <InterestingText
-                    int_text={this.state.interesting_text}
-                    text_vis={this.state.text_vis}
-                    refreshText={this.refreshText.bind(this)}
-                />
+                <Grid.Row centered style={{ padding: "5pt 0 0 0" }}>
+                    <InterestingText
+                    text_vis={this.state.text_vis}	                  int_text={this.state.interesting_text}
+                    refreshText={this.refreshText.bind(this)}	              
+                />	                      
+                </Grid.Row>
+                <Grid.Row centered style={{ padding: "50pt 0 0 0" }}>
+                    <SimpCloud
+                        words={this.state.word_cloud}
+                        word_vis={this.state.word_vis}
+                    />
+                </Grid.Row>
             </Grid>
         );
     }
 
     getData(search) {
+        this.state.search_loading = true;
         fetch(`/search/${search}/${this.props.options.reddit}/${this.props.options.twitter}`)
             .then((res) => res.json())
             .then((data) => {
+                this.state.search_loading = false;
                 console.log(data);
                 let avg_sent = data.avg_sentiment; //data.avg_sentiment
                 let samples = data.sample;
@@ -282,7 +311,75 @@ class ContentSearch extends React.Component {
         });
     }
 }
+class ContentInfo extends React.Component {
+    render() {
+        return (
+            <Grid container>
+                <Grid.Row centered style={{ padding: "50pt 0 0 0" }}>
+                    <Container fluid textAlign="left">
+                        <Header as="h2">
+                            The Nature of vibecheck's Content
+                        </Header>
+                        <p>
+                            With the goal of analysing information gathered from
+                            the public discussions on the open web,{" "}
+                            <em>vibecheck</em> does not filter the data that is
+                            analysed and delivered to users upon the search of a
+                            query. However, this means that disagreeable,
+                            inappropriate, false, inflammatory, or unacceptable
+                            language may be analysed and may appear when a
+                            search is performed. Furthermore, this kind of data
+                            may appear for search topics that may seem free of
+                            objectionable discussion. Please be advised that
+                            this tool will search the entirety of the sites that
+                            it indexes and that anything that appears upon the
+                            completion of a search is not necesarily
+                            representative of the views or opinions of this
+                            site's creators. In fact, all data shown upon a
+                            search is generated by users from the sites that{" "}
+                            <em>vibecheck</em> indexes; no results have been
+                            created or modified by the developers of this site.
+                            <em> Proceed with caution.</em>
+                        </p>
 
+                        <Header as="h2">The Sentiment Score</Header>
+                        <p>
+                            At times, the sentiment score may seem to return
+                            strange or annoyingly-neutral results. This is
+                            normal; we're taking into account any comment that
+                            the tool finds during processing, so a plethora of
+                            negative sentiment may end up canceled out by a
+                            plethora of positive sentiment, leaving you with a
+                            fairly neutral score. Additonally, you may find that
+                            the score and results change between multiple
+                            searches of the same query, even within a few
+                            minutes of each other. This is also normal; the
+                            primary cause of this variance are the interfaces
+                            (APIs) we're using to gather data from platforms. A
+                            search of a term on a certain platform will often
+                            yield differing results due to a variety of
+                            limitations present in the API that allows us to
+                            obtain this data, so the same search may lead to the
+                            analysis of different datasets.
+                        </p>
+
+                        <Header as="h2">Privacy Policy</Header>
+                        <p>
+                            We care about the privacy of our users. Thus, we
+                            collect the minimum amount of information required
+                            to keep this site working as intended. Each search
+                            and its results are recorded; however, no personally
+                            identifying nformation is associated with any of
+                            these searches. Furthermore, we collect no
+                            personally identifying information upon any other
+                            action taken on the site, nor do we use cookies.
+                        </p>
+                    </Container>
+                </Grid.Row>
+            </Grid>
+        );
+    }
+}
 class ContentTrends extends React.Component {
     render() {
         return (
@@ -293,4 +390,4 @@ class ContentTrends extends React.Component {
     }
 }
 
-ReactDOM.render(<SearchPage />, document.getElementById("root"));
+ReactDOM.render(<Page />, document.getElementById("root"));
