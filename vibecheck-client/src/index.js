@@ -3,6 +3,7 @@ import React, { Component } from "react";
 import ReactDOM from "react-dom";
 import Wordcloud from "wordcloud";
 import { Dropdown, Menu, Grid, Search } from "semantic-ui-react";
+import { Slider } from "react-semantic-ui-range";
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 import "./index.css";
 import "semantic-ui-css/semantic.min.css";
@@ -19,9 +20,7 @@ const initialMenuState = {
 };
 
 class SimpCloud extends React.Component {
-    hoverWord(item, dimension) {
-        dimension = dimension * 2;
-    }
+
     componentDidUpdate() {
     
       const list = this.props.words;
@@ -47,14 +46,33 @@ class SimpCloud extends React.Component {
 }
 
 class SearchPage extends React.Component {
+    constructor(props) {  //this is now the parent component of HeaderMenu and Search
+        super(props);
+
+        this.state = {reddit: true, 
+                      twitter: false, 
+                      amount: 1000, 
+                      date: 'week'};
+      }
+      updateReddit(){
+          this.setState({
+            reddit: !this.state.reddit
+          });
+        }
+      updateTwitter(){
+            this.setState({
+              twitter: !this.state.twitter
+            });
+      }
+
     render() {
         return (
             <Router>
                 <div>
-                    <HeaderMenu />
+                    <HeaderMenu options={this.state} upRed={this.updateReddit.bind(this)} upTwit={this.updateTwitter.bind(this)}/>
                     <Switch>
                         <Route exact path="/">
-                            <ContentSearch />
+                            <ContentSearch options={this.state} />
                         </Route>
                         <Route path="/trends">
                             <ContentTrends />
@@ -71,33 +89,49 @@ class HeaderMenu extends React.Component {
         super(props);
         this.state = initialMenuState;
     }
-
+    
     handleItemClick = (e, { name }) => this.setState({ activeItem: name });
-
+    
     render() {
+        let red = this.props.options.reddit;
+        let twit = this.props.options.twitter;
         const { activeItem } = this.state;
         return (
-            <Menu>
-                <Menu.Item
-                    as={Link}
-                    to="/"
-                    name="search"
-                    active={activeItem === "search"}
-                    onClick={this.handleItemClick}
-                >
-                    Search
-                </Menu.Item>
+        
+               <Menu>
+                   
 
-                <Menu.Item
-                    as={Link}
-                    to="/trends"
-                    name="trends"
-                    active={activeItem === "trends"}
-                    onClick={this.handleItemClick}
-                >
-                    Trends
-                </Menu.Item>
-            </Menu>
+               <Menu.Item
+                   as={Link}
+                   to="/"
+                   name="search"
+                   active={activeItem === "search"}
+                   onClick={this.handleItemClick}
+               >
+                   Search
+               </Menu.Item>
+               <Menu.Item
+                class="icon"> 
+               <div class="ui simple dropdown">
+                   <i class="cog icon"></i>
+    <div class="menu">
+      <div onClick={this.props.upRed} class="item" > <span style={{color: red ?'#000000':'#aaaaaa'}}>Reddit <i class="mini reddit icon"></i></span> </div> 
+      <div onClick={this.props.upTwit} class="item" > <span  style={{color: twit ?'#000000':'#aaaaaa'}}>Twitter <i class="mini twitter icon"></i></span> </div>  
+    </div>
+    </div>
+               </Menu.Item>
+
+               <Menu.Item
+                   position="right"
+                   as={Link}
+                   to="/trends"
+                   name="trends"
+                   active={activeItem === "trends"}
+                   onClick={this.handleItemClick}
+               >
+                   Trends
+               </Menu.Item>
+           </Menu>
         );
     }
 }
@@ -216,7 +250,7 @@ class ContentSearch extends React.Component {
     }
 
     getData(search) {
-        fetch(`/search/${search}/reddit`)
+        fetch(`/search/${search}/${this.props.options.reddit}/${this.props.options.twitter}`)
             .then((res) => res.json())
             .then((data) => {
                 console.log(data);

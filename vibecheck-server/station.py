@@ -9,14 +9,20 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
 
-@app.route('/search/<search>/<sites>')
-def search_request(search,sites):
+@app.route('/search/<search>/<reddit>/<twitter>')
+def search_request(search,reddit,twitter):
 
     db.create_all()
+    coms = ['n']
     #tweets = s.search_twitter(search)
-    urls = s.search_google(search)
+    urls = []
     # urls = ["https://www.reddit.com/r/SFGiants/","https://www.reddit.com/r/Politics/"] <-- good way to test if out of searches
-    coms = s.search_reddit(urls)
+    if twitter == "true":
+        coms += s.search_twitter(search)
+    if reddit == "true":
+        urls = s.search_google(search)
+        coms += s.search_reddit(urls)
+
     avg_sentiment, sample = s.analyze_text(coms, search)
 
     word_count = s.word_count(coms)
@@ -24,16 +30,10 @@ def search_request(search,sites):
         "urls": urls,
         "avg_sentiment": avg_sentiment,
         "word_count": word_count,
-<<<<<<< HEAD
         "comments" : len(coms),
         "sample" : sample,
-        "sites": sites
+        "sites": [reddit,twitter]
         
-=======
-        "comments": len(coms),
-        "sample": sample
-
->>>>>>> 9a1c7107878ba5f21624c30f0ca9d30dbdacaf0f
     }
 
     search_db_entry = UserSearch(search=search)

@@ -174,19 +174,11 @@ def analyze_text(texts,term):
     num_datum += len(texts)
     for text in texts:
         compound_sentiment = analyser.polarity_scores(text).get('compound')
-<<<<<<< HEAD
         if compound_sentiment > .5 or compound_sentiment < -.5: 
             compound_sentiment  *= 2
             if term.lower() in text.lower() and len(text) < 1000: 
                interestingText.append(text)      
         sentiment_sum += compound_sentiment
-=======
-        sentiment_sum += compound_sentiment
-        if compound_sentiment > .5 or compound_sentiment < -.5:
-            compound_sentiment  *= 2
-            if term.lower() in text.lower() and len(text) < 1000:
-               interestingText.append(text)
->>>>>>> 9a1c7107878ba5f21624c30f0ca9d30dbdacaf0f
     if (num_datum != 0):
         return (sentiment_sum / num_datum, interestingText)
     else:
