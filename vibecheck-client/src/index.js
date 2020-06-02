@@ -27,56 +27,68 @@ const initialMenuState = {
 };
 
 class SimpCloud extends React.Component {
-
     componentDidUpdate() {
-    
-      const list = this.props.words;
-      Wordcloud(
-        this.refs["my-canvas"],
-        {list: list,color: '#000000',fontFamily:'Tahoma, Geneva, sans-serif',drawOutOfBound:false}
-
-      );
-      
+        const list = this.props.words;
+        Wordcloud(this.refs["my-canvas"], {
+            list: list,
+            color: "#000000",
+            fontFamily: "Tahoma, Geneva, sans-serif",
+            drawOutOfBound: false,
+        });
     }
 
     render() {
-      if (this.props.word_vis == true){
-      return (<div>
-        <div id="html-canvas" ref="my-canvas" style={{width:this.props.words.length * 8,height:this.props.words.length * 8}}/>
-      </div>)
-      }
-      else{
-          return(
-          <div ref="my-canvas"/>)
-      }
+        if (this.props.word_vis == true) {
+            return (
+                <div>
+                    <div
+                        id="html-canvas"
+                        ref="my-canvas"
+                        style={{
+                            width: this.props.words.length * 8,
+                            height: this.props.words.length * 8,
+                        }}
+                    />
+                </div>
+            );
+        } else {
+            return <div ref="my-canvas" />;
+        }
     }
 }
 
 class Page extends React.Component {
-    constructor(props) {  //this is now the parent component of HeaderMenu and Search
+    constructor(props) {
+        //this is now the parent component of HeaderMenu and Search
         super(props);
 
-        this.state = {reddit: true, 
-                      twitter: false, 
-                      amount: 1000, 
-                      date: 'week'};
-      }
-      updateReddit(){
-          this.setState({
-            reddit: !this.state.reddit
-          });
-        }
-      updateTwitter(){
-            this.setState({
-              twitter: !this.state.twitter
-            });
-      }
+        this.state = {
+            reddit: true,
+            twitter: false,
+            amount: 1000,
+            date: "week",
+        };
+    }
+    updateReddit() {
+        this.setState({
+            reddit: !this.state.reddit,
+        });
+    }
+    updateTwitter() {
+        this.setState({
+            twitter: !this.state.twitter,
+        });
+    }
 
     render() {
         return (
             <Router>
                 <div>
-                    <HeaderMenu options={this.state} upRed={this.updateReddit.bind(this)} upTwit={this.updateTwitter.bind(this)}/>
+                    <HeaderMenu
+                        options={this.state}
+                        upRed={this.updateReddit.bind(this)}
+                        upTwit={this.updateTwitter.bind(this)}
+                    />
                     <Switch>
                         <Route exact path="/">
                             <ContentSearch options={this.state} />
@@ -99,47 +111,62 @@ class HeaderMenu extends React.Component {
         super(props);
         this.state = initialMenuState;
     }
-    
+
     handleItemClick = (e, { name }) => this.setState({ activeItem: name });
-    
+
     render() {
         let red = this.props.options.reddit;
         let twit = this.props.options.twitter;
         const { activeItem } = this.state;
         return (
-        
-               <Menu>
-               <Menu.Item
-                   as={Link}
-                   to="/"
-                   name="search"
-                   active={activeItem === "search"}
-                   onClick={this.handleItemClick}
-               >
-                   Search
-               </Menu.Item>
-               <Menu.Item
-                   as={Link}
-                   to="/trends"
-                   name="trends"
-                   active={activeItem === "trends"}
-                   onClick={this.handleItemClick}
-               >
-                   Trends
-               </Menu.Item>
-               <Menu.Item
-                class="icon"> 
-               <div class="ui simple dropdown">
-                   <i class="cog icon"></i>
-    <div class="menu">
-      <div onClick={this.props.upRed} class="item" > <span style={{color: red ?'#000000':'#aaaaaa'}}>Reddit <i class="mini reddit icon"></i></span> </div> 
-      <div onClick={this.props.upTwit} class="item" > <span  style={{color: twit ?'#000000':'#aaaaaa'}}>Twitter <i class="mini twitter icon"></i></span> </div>  
-    </div>
-    </div>
-               </Menu.Item>
+            <Menu>
+                <Menu.Item
+                    as={Link}
+                    to="/"
+                    name="search"
+                    active={activeItem === "search"}
+                    onClick={this.handleItemClick}
+                >
+                    Search
+                </Menu.Item>
+                <Menu.Item
+                    as={Link}
+                    to="/trends"
+                    name="trends"
+                    active={activeItem === "trends"}
+                    onClick={this.handleItemClick}
+                >
+                    Trends
+                </Menu.Item>
+                <Menu.Item class="icon">
+                    <div class="ui simple dropdown">
+                        <i class="cog icon"></i>
+                        <div class="menu">
+                            <div onClick={this.props.upRed} class="item">
+                                {" "}
+                                <span
+                                    style={{
+                                        color: red ? "#000000" : "#aaaaaa",
+                                    }}
+                                >
+                                    Reddit <i class="mini reddit icon"></i>
+                                </span>{" "}
+                            </div>
+                            <div onClick={this.props.upTwit} class="item">
+                                {" "}
+                                <span
+                                    style={{
+                                        color: twit ? "#000000" : "#aaaaaa",
+                                    }}
+                                >
+                                    Twitter <i class="mini twitter icon"></i>
+                                </span>{" "}
+                            </div>
+                        </div>
+                    </div>
+                </Menu.Item>
 
-               
-               <Menu.Menu position="right">
+                <Menu.Menu position="right">
                     <Menu.Item
                         as={Link}
                         to="/info"
@@ -150,7 +177,7 @@ class HeaderMenu extends React.Component {
                         Warnings and Policies
                     </Menu.Item>
                 </Menu.Menu>
-           </Menu>
+            </Menu>
         );
     }
 }
@@ -158,7 +185,7 @@ class InterestingText extends React.Component {
     render() {
         if (this.props.text_vis) {
             return (
-                <>
+                <Grid>
                     <Grid.Row
                         fixed="true"
                         centered
@@ -177,7 +204,7 @@ class InterestingText extends React.Component {
                             <i className="undo icon"></i>
                         </button>
                     </Grid.Row>
-                </>
+                </Grid>
             );
         } else {
             return (
@@ -262,9 +289,10 @@ class ContentSearch extends React.Component {
                 </Grid.Row>
                 <Grid.Row centered style={{ padding: "5pt 0 0 0" }}>
                     <InterestingText
-                    text_vis={this.state.text_vis}	                  int_text={this.state.interesting_text}
-                    refreshText={this.refreshText.bind(this)}	              
-                />	                      
+                        text_vis={this.state.text_vis}
+                        int_text={this.state.interesting_text}
+                        refreshText={this.refreshText.bind(this)}
+                    />
                 </Grid.Row>
                 <Grid.Row centered style={{ padding: "50pt 0 0 0" }}>
                     <SimpCloud
@@ -278,7 +306,9 @@ class ContentSearch extends React.Component {
 
     getData(search) {
         this.state.search_loading = true;
-        fetch(`/search/${search}/${this.props.options.reddit}/${this.props.options.twitter}`)
+        fetch(
+            `/search/${search}/${this.props.options.reddit}/${this.props.options.twitter}`
+        )
             .then((res) => res.json())
             .then((data) => {
                 this.state.search_loading = false;
@@ -382,11 +412,7 @@ class ContentInfo extends React.Component {
 }
 class ContentTrends extends React.Component {
     render() {
-        return (
-            <div>
-                Trends
-            </div>
-        );
+        return <div>Trends</div>;
     }
 }
 
