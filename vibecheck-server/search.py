@@ -211,7 +211,7 @@ search_facebook('covid')
 # todo -add more specific functions to search individual news sources, update dates automatically,
 # merge relevancy and popularity results for better results
 
-
+#gathers all news from past 25 days
 def search_all_news(keyword):
     newsapi = NewsApiClient(api_key=news_api_key)
     article_list = []
@@ -230,6 +230,7 @@ def search_all_news(keyword):
     return article_list
 
 
+#only gathers breaking/top stories but in more detail
 def search_top_news(keyword):
     newsapi = NewsApiClient(api_key=news_api_key)
     article_list = []
