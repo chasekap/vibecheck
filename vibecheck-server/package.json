@@ -2,7 +2,9 @@
   "name": "vibecheck-server",
   "version": "0.1.0",
   "private": true,
-  "dependencies": {},
+  "dependencies": {
+    "react-semantic-ui-range": "^0.7.0"
+  },
   "scripts": {
     "start-api": "venv/Scripts/flask run",
     "start-api-m": "venv/bin/flask run"

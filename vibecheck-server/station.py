@@ -16,32 +16,44 @@ def initial():
     db.create_all()
 
 
-@app.route('/search/<search>')
-def search_request(search):
+@app.route('/search/<search>/<reddit>/<twitter>')
+def search_request(search, reddit, twitter):
+
+    coms = ['n']
     #tweets = s.search_twitter(search)
-    #articles = s.search_all_news(search)
-    urls = s.search_google(search)
+    urls = []
     # urls = ["https://www.reddit.com/r/SFGiants/","https://www.reddit.com/r/Politics/"] <-- good way to test if out of searches
-    coms = s.search_reddit(urls)
-    avg_sentiment, sample = s.analyze_text(coms,search)
+    if twitter == "true":
+        coms += s.search_twitter(search)
+    if reddit == "true":
+        urls = s.search_google(search)
+        coms += s.search_reddit(urls)
+
+    avg_sentiment, sample = s.analyze_text(coms, search)
+
+    comment_length = len(coms)
+    sites_searched = [reddit, twitter]
 
     word_count = s.word_count(coms)
     output_dict = {
         "urls": urls,
         "avg_sentiment": avg_sentiment,
         "word_count": word_count,
-        "comments": len(coms),
-        "sample": sample
+        "comments": comment_length,
+        "sample": sample,
+        "sites": sites_searched
+
     }
 
     search_db_entry = UserSearch(
-        search=search, 
+        search=search,
         urls=urls,
-        avg_sentiment = avg_sentiment,
-        word_count = word_count,
-        comments = len(coms),
-        sample = sample
-        )
+        avg_sentiment=avg_sentiment,
+        word_count=word_count,
+        comments=comment_length,
+        sample=sample,
+        sites=sites_searched
+    )
 
     db.session.add(search_db_entry)
     db.session.commit()
@@ -52,12 +64,14 @@ def search_request(search):
 class UserSearch(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     search = db.Column(db.String(280), unique=False, nullable=False)
-    time = db.Column(db.String(48), nullable=False, default=datetime.datetime.utcnow)
+    time = db.Column(db.String(48), nullable=False,
+                     default=datetime.datetime.utcnow)
     urls = db.Column(db.PickleType)
     avg_sentiment = db.Column(db.Float, unique=False)
     word_count = db.Column(db.PickleType)
     comments = db.Column(db.Integer, unique=False)
     sample = db.Column(db.PickleType)
+    sites = db.Column(db.PickleType)
 
     def __repr__(self):
         return '<Search %r>' % self.search

@@ -207,6 +207,7 @@ def search_all_news(keyword):
 '''
 
 
+#only gathers breaking/top stories but in more detail
 def search_top_news(keyword):
     newsapi = NewsApiClient(api_key=news_api_key)
     article_list = []
@@ -242,11 +243,6 @@ def analyze_text(texts, term):
             if term.lower() in text.lower() and len(text) < 1000:
                 interestingText.append(text)
         sentiment_sum += compound_sentiment
-        sentiment_sum += compound_sentiment
-        if compound_sentiment > .5 or compound_sentiment < -.5:
-            compound_sentiment *= 2
-            if term.lower() in text.lower() and len(text) < 1000:
-                interestingText.append(text)
     if (num_datum != 0):
         return (sentiment_sum / num_datum, interestingText)
     else:

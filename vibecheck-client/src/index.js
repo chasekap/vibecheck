@@ -10,13 +10,8 @@ import {
     Container,
     Header,
 } from "semantic-ui-react";
-import {
-    BrowserRouter as Router,
-    Switch,
-    Route,
-    Link,
-    useLocation,
-} from "react-router-dom";
+import { Slider } from "react-semantic-ui-range";
+import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 import "./index.css";
 import "semantic-ui-css/semantic.min.css";
 
@@ -32,9 +27,6 @@ const initialMenuState = {
 };
 
 class SimpCloud extends React.Component {
-    hoverWord(item, dimension) {
-        dimension = dimension * 2;
-    }
     componentDidUpdate() {
         const list = this.props.words;
         Wordcloud(this.refs["my-canvas"], {
@@ -66,23 +58,46 @@ class SimpCloud extends React.Component {
 }
 
 class Page extends React.Component {
+    constructor(props) {
+        //this is now the parent component of HeaderMenu and Search
+        super(props);
+
+        this.state = {
+            reddit: true,
+            twitter: false,
+            amount: 1000,
+            date: "week",
+        };
+    }
+    updateReddit() {
+        this.setState({
+            reddit: !this.state.reddit,
+        });
+    }
+    updateTwitter() {
+        this.setState({
+            twitter: !this.state.twitter,
+        });
+    }
+
     render() {
         return (
             <Router>
                 <div>
-                    <HeaderMenu />
+                    <HeaderMenu
+                        options={this.state}
+                        upRed={this.updateReddit.bind(this)}
+                        upTwit={this.updateTwitter.bind(this)}
+                    />
                     <Switch>
                         <Route exact path="/">
-                            <ContentSearch />
+                            <ContentSearch options={this.state} />
                         </Route>
                         <Route path="/trends">
                             <ContentTrends />
                         </Route>
                         <Route path="/info">
                             <ContentInfo />
-                        </Route>
-                        <Route path="*">
-                            <ContentInvalid />
                         </Route>
                     </Switch>
                 </div>
@@ -100,6 +115,8 @@ class HeaderMenu extends React.Component {
     handleItemClick = (e, { name }) => this.setState({ activeItem: name });
 
     render() {
+        let red = this.props.options.reddit;
+        let twit = this.props.options.twitter;
         const { activeItem } = this.state;
         return (
             <Menu>
@@ -112,7 +129,6 @@ class HeaderMenu extends React.Component {
                 >
                     Search
                 </Menu.Item>
-
                 <Menu.Item
                     as={Link}
                     to="/trends"
@@ -121,6 +137,33 @@ class HeaderMenu extends React.Component {
                     onClick={this.handleItemClick}
                 >
                     Trends
+                </Menu.Item>
+                <Menu.Item class="icon">
+                    <div class="ui simple dropdown">
+                        <i class="cog icon"></i>
+                        <div class="menu">
+                            <div onClick={this.props.upRed} class="item">
+                                {" "}
+                                <span
+                                    style={{
+                                        color: red ? "#000000" : "#aaaaaa",
+                                    }}
+                                >
+                                    Reddit <i class="mini reddit icon"></i>
+                                </span>{" "}
+                            </div>
+                            <div onClick={this.props.upTwit} class="item">
+                                {" "}
+                                <span
+                                    style={{
+                                        color: twit ? "#000000" : "#aaaaaa",
+                                    }}
+                                >
+                                    Twitter <i class="mini twitter icon"></i>
+                                </span>{" "}
+                            </div>
+                        </div>
+                    </div>
                 </Menu.Item>
 
                 <Menu.Menu position="right">
@@ -136,6 +179,41 @@ class HeaderMenu extends React.Component {
                 </Menu.Menu>
             </Menu>
         );
+    }
+}
+class InterestingText extends React.Component {
+    render() {
+        if (this.props.text_vis) {
+            return (
+                <Grid>
+                    <Grid.Row
+                        fixed="true"
+                        centered
+                        style={{ padding: "20pt 0 0 0" }}
+                    >
+                        <div style={{ padding: "0 0 0 5pt" }}>
+                            {this.props.int_text}
+                        </div>
+                    </Grid.Row>
+                    <Grid.Row style={{ padding: "10pt 0 0 0" }} centered>
+                        <button
+                            className="ui icon button mini"
+                            onClick={this.props.refreshText}
+                            style={{ background: "white", padding: "0 0 0 0" }}
+                        >
+                            <i className="undo icon"></i>
+                        </button>
+                    </Grid.Row>
+                </Grid>
+            );
+        } else {
+            return (
+                <Grid.Row
+                    centered
+                    style={{ padding: "100pt 0 0 0" }}
+                ></Grid.Row>
+            );
+        }
     }
 }
 class ContentSearch extends React.Component {
@@ -174,6 +252,13 @@ class ContentSearch extends React.Component {
     render() {
         return (
             <Grid container>
+                <Grid.Row centered style={{ padding: "0 -20pt 0 0" }}>
+                    <SimpCloud
+                        words={this.state.word_cloud}
+                        word_vis={this.state.word_vis}
+                    />
+                </Grid.Row>
+
                 <Grid.Row centered style={{ padding: "50pt 0 0 0" }}>
                     <div className="logo">vibecheck</div>
                 </Grid.Row>
@@ -204,8 +289,8 @@ class ContentSearch extends React.Component {
                 </Grid.Row>
                 <Grid.Row centered style={{ padding: "5pt 0 0 0" }}>
                     <InterestingText
-                        int_text={this.state.interesting_text}
                         text_vis={this.state.text_vis}
+                        int_text={this.state.interesting_text}
                         refreshText={this.refreshText.bind(this)}
                     />
                 </Grid.Row>
@@ -221,7 +306,9 @@ class ContentSearch extends React.Component {
 
     getData(search) {
         this.state.search_loading = true;
-        fetch(`/search/${search}`)
+        fetch(
+            `/search/${search}/${this.props.options.reddit}/${this.props.options.twitter}`
+        )
             .then((res) => res.json())
             .then((data) => {
                 this.state.search_loading = false;
@@ -254,49 +341,6 @@ class ContentSearch extends React.Component {
         });
     }
 }
-
-class InterestingText extends React.Component {
-    render() {
-        if (this.props.text_vis) {
-            return (
-                <Grid container>
-                    <Grid.Row style={{ padding: "40pt 0 0 0" }} centered>
-                        <button
-                            className="ui icon button mini"
-                            onClick={this.props.refreshText}
-                            style={{ background: "white", padding: "0 0 0 0" }}
-                        >
-                            <i className="undo icon"></i>
-                        </button>
-                    </Grid.Row>
-                    <Grid.Row
-                        fixed="true"
-                        centered
-                        style={{ padding: "10pt 0 0 0" }}
-                    >
-                        <div style={{ padding: "0 0 0 5pt" }}>
-                            {this.props.int_text}
-                        </div>
-                    </Grid.Row>
-                </Grid>
-            );
-        } else {
-            return (
-                <Grid.Row
-                    centered
-                    style={{ padding: "100pt 0 0 0" }}
-                ></Grid.Row>
-            );
-        }
-    }
-}
-
-class ContentTrends extends React.Component {
-    render() {
-        return <div>Trends</div>;
-    }
-}
-
 class ContentInfo extends React.Component {
     render() {
         return (
@@ -366,15 +410,9 @@ class ContentInfo extends React.Component {
         );
     }
 }
-
-class ContentInvalid extends React.Component {
+class ContentTrends extends React.Component {
     render() {
-        return (
-            <div>
-                404: Page not found! Try going to one of the pages linked on the
-                header.
-            </div>
-        );
+        return <div>Trends</div>;
     }
 }
 
