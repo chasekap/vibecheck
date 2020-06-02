@@ -34,7 +34,7 @@ access_token_secret = vars.ACCESS_TOKEN_SECRET
 # newsapi auth
 news_api_key = vars.NEWS_KEY
 
-#dates used for article retrieval
+# dates used for article retrieval
 end_date = date.today()
 start_date = date.today() - timedelta(days=25)
 
@@ -136,82 +136,58 @@ def search_reddit(posts):
 
 
 def search_twitter(keyword):
-  filter_string = ' -filter:retweets'
-  key = f"{keyword}{filter_string}"
+    filter_string = ' -filter:retweets'
+    key = f"{keyword}{filter_string}"
 
-  auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
-  auth.set_access_token(access_token, access_token_secret)
+    auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
+    auth.set_access_token(access_token, access_token_secret)
 
-  api = tweepy.API(auth, wait_on_rate_limit=True,
-                   wait_on_rate_limit_notify=True)
+    api = tweepy.API(auth, wait_on_rate_limit=True,
+                     wait_on_rate_limit_notify=True)
 
-  maxTweets = 100  # Lowered to prevent api cooldown
-  tweetsPerQuery = 100
-  tweetCount = 0
+    maxTweets = 100  # Lowered to prevent api cooldown
+    tweetsPerQuery = 100
+    tweetCount = 0
 
-  sinceId = None
+    sinceId = None
 
-  twitter_comments = []
+    twitter_comments = []
 
-  max_id = -1
+    max_id = -1
 
-  while tweetCount < maxTweets:
-      if(max_id <= 0):
-          if(not sinceId):
-              tweets = api.search(
-                  q=key, count=tweetsPerQuery, tweet_mode='extended')
-          else:
-              tweets = api.search(q=key, count=tweetsPerQuery,
-                                  since_id=sinceId, tweet_mode='extended')
-      else:
-          if(not sinceId):
-              tweets = api.search(q=key, count=tweetsPerQuery, max_id=str(
-                  max_id - 1), tweet_mode='extended')
-          else:
-              tweets = api.search(q=key, count=tweetsPerQuery, max_id=str(
-                  max_id - 1), since_id=sinceId, tweet_mode='extended')
-      if(not tweets):
-          break
-      for tweet in tweets:
-          twitter_comments.append(tweet.full_text)
-          # print(tweet.full_text + '\n') #for testing purposes
-      tweetCount += len(tweets)
-      max_id = tweets[-1].id
+    while tweetCount < maxTweets:
+        if max_id <= 0:
+            if not sinceId:
+                tweets = api.search(
+                    q=key, count=tweetsPerQuery, tweet_mode='extended')
+            else:
+                tweets = api.search(q=key, count=tweetsPerQuery,
+                                    since_id=sinceId, tweet_mode='extended')
+        else:
+            if (not sinceId):
+                tweets = api.search(q=key, count=tweetsPerQuery, max_id=str(
+                    max_id - 1), tweet_mode='extended')
+            else:
+                tweets = api.search(q=key,
+                                    count=tweetsPerQuery,
+                                    max_id=str(max_id - 1),
+                                    since_id=sinceId,
+                                    tweet_mode='extended')
+        if(not tweets):
+            break
+        for tweet in tweets:
+            twitter_comments.append(tweet.full_text)
+            # print(tweet.full_text + '\n') #for testing purposes
+        tweetCount += len(tweets)
+        max_id = tweets[-1].id
 
-  return twitter_comments
-
-
-'''
-# Facebook API no longer supports functionality needed
-
-
-token = 'EAANxQwQsTxsBACcLZBnNTJ7HL2z5VZAGhBbwXNYRsAaUxJLcP6ZAiABI8CQZBFrwKiEEKiH4dirf28FPlA3PN3er9dyuXBjmd1sbIn6XT6Tm3G10dFuBWOkQg0utHX3msI4NCOL0ydAZAcoZCR4SxWPlYZCI7nYnTxlqowwfDRtKKeMWjTecIQbCwZC6ooVBRfXeFC7OZCPhBxwFXrijzZBUAE60yBeg5LJCBM8ujKIGtPDgP8qRNUs8aE'
-
-def search_facebook(keyword):
-    facebook_posts = []
-
-    graph = facebook.GraphAPI(access_token=token, version=7.0)
-    #error here, might not work because cant search for posts
-    posts = graph.request('search?q=keyword&type=event&limit=10')
-    post_list = posts['data']
-
-    list_size = len(post_list)
-
-    for post_num in list_size:
-        post_id = post_list[post_num]['id']
-        post_object = graph.get_object(id=post_id, fields='caption')
-        caption = post_object['caption']
-        print(caption)
-        facebook_posts.append(caption)
-
-
-search_facebook('covid')
-'''
+    return twitter_comments
 
 # todo -add more specific functions to search individual news sources, update dates automatically,
 # merge relevancy and popularity results for better results
 
-#gathers all news from past 25 days
+
+'''
 def search_all_news(keyword):
     newsapi = NewsApiClient(api_key=news_api_key)
     article_list = []
@@ -228,16 +204,16 @@ def search_all_news(keyword):
         # print(article['description'] + '\n')
 
     return article_list
+'''
 
 
 #only gathers breaking/top stories but in more detail
 def search_top_news(keyword):
     newsapi = NewsApiClient(api_key=news_api_key)
     article_list = []
-
-        all_articles = newsapi.get_top_headlines(q=keyword,
-                                          language='en',
-                                          page=1, page_size=100)
+    all_articles = newsapi.get_top_headlines(q=keyword,
+                                             language='en',
+                                             page=1, page_size=100)
 
     for article in all_articles['articles']:
         article_list.append(article['description'])
@@ -247,13 +223,13 @@ def search_top_news(keyword):
     return article_list
 
 
-  '''
-  public_tweets = api.search(keyword,count=100)
-  for tweet in public_tweets:
+'''
+public_tweets = api.search(keyword,count=100)
+for tweet in public_tweets:
     tweety = tweet.text
     # print(tweety + '\n') test output
     twitter_comments.append(tweety)
-  '''
+'''
 
 
 def analyze_text(texts, term):
@@ -262,17 +238,11 @@ def analyze_text(texts, term):
     num_datum += len(texts)
     for text in texts:
         compound_sentiment = analyser.polarity_scores(text).get('compound')
-<<<<<<< HEAD
-        if compound_sentiment > .5 or compound_sentiment < -.5:
-            compound_sentiment  *= 2
-            if term.lower() in text.lower() and len(text) < 1000:
-               interestingText.append(text)
-        sentiment_sum += compound_sentiment
-        sentiment_sum += compound_sentiment
         if compound_sentiment > .5 or compound_sentiment < -.5:
             compound_sentiment *= 2
             if term.lower() in text.lower() and len(text) < 1000:
                 interestingText.append(text)
+        sentiment_sum += compound_sentiment
     if (num_datum != 0):
         return (sentiment_sum / num_datum, interestingText)
     else:
