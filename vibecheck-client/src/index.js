@@ -9,6 +9,7 @@ import {
     Search,
     Container,
     Header,
+    List,
 } from "semantic-ui-react";
 import { Slider } from "react-semantic-ui-range";
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
@@ -185,17 +186,8 @@ class InterestingText extends React.Component {
     render() {
         if (this.props.text_vis) {
             return (
-                <Grid>
-                    <Grid.Row
-                        fixed="true"
-                        centered
-                        style={{ padding: "20pt 0 0 0" }}
-                    >
-                        <div style={{ padding: "0 0 0 5pt" }}>
-                            {this.props.int_text}
-                        </div>
-                    </Grid.Row>
-                    <Grid.Row style={{ padding: "10pt 0 0 0" }} centered>
+                <Grid container>
+                    <Grid.Row style={{ padding: "40pt 0 0 0" }} centered>
                         <button
                             className="ui icon button mini"
                             onClick={this.props.refreshText}
@@ -203,6 +195,15 @@ class InterestingText extends React.Component {
                         >
                             <i className="undo icon"></i>
                         </button>
+                    </Grid.Row>
+                    <Grid.Row
+                        fixed="true"
+                        centered
+                        style={{ padding: "10pt 0 0 0" }}
+                    >
+                        <div style={{ padding: "0 0 0 5pt" }}>
+                            {this.props.int_text}
+                        </div>
                     </Grid.Row>
                 </Grid>
             );
@@ -223,16 +224,16 @@ class ContentSearch extends React.Component {
         this.state.avg_sentiment =
             "(mean sentiment score, (-1 to +1 inclusive) )";
         this.state.sentiment_string = "TBD";
+
         this.interesting_text = "";
         this.text_vis = false;
         this.int_texts = [];
         this.word_cloud = [];
         this.word_vis = false;
-        this.search_loading = false;
     }
 
     handleSearchChange = (e, { value }) => {
-        this.setState({ isLoading: true, value });
+        this.setState({ value });
         this.setState({ word_vis: false, word_cloud: [] });
 
         if (this.timeout) clearTimeout(this.timeout);
@@ -242,30 +243,19 @@ class ContentSearch extends React.Component {
                 return this.setState(initialSearchState);
 
             this.getData(value);
-
-            this.setState({
-                isLoading: false,
-            });
         }, 1500);
     };
 
     render() {
         return (
             <Grid container>
-                <Grid.Row centered style={{ padding: "0 -20pt 0 0" }}>
-                    <SimpCloud
-                        words={this.state.word_cloud}
-                        word_vis={this.state.word_vis}
-                    />
-                </Grid.Row>
-
                 <Grid.Row centered style={{ padding: "50pt 0 0 0" }}>
                     <div className="logo">vibecheck</div>
                 </Grid.Row>
                 <Grid.Row centered style={{ padding: "50pt 0 0 0" }}>
                     <Search
                         className="search-bar"
-                        loading={this.state.search_loading}
+                        loading={this.state.isLoading}
                         placeholder="what's on your mind?"
                         onSearchChange={_.debounce(
                             this.handleSearchChange,
@@ -305,13 +295,13 @@ class ContentSearch extends React.Component {
     }
 
     getData(search) {
-        this.state.search_loading = true;
+        this.setState({ isLoading: true });
         fetch(
             `/search/${search}/${this.props.options.reddit}/${this.props.options.twitter}`
         )
             .then((res) => res.json())
             .then((data) => {
-                this.state.search_loading = false;
+                this.setState({ isLoading: false });
                 console.log(data);
                 let avg_sent = data.avg_sentiment; //data.avg_sentiment
                 let samples = data.sample;
@@ -341,6 +331,159 @@ class ContentSearch extends React.Component {
         });
     }
 }
+
+class ContentTrends extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = initialSearchState;
+
+        this.state.sorted_results = [];
+        this.state.valid_date = false;
+        this.state.data_for_date = false;
+        this.state.date_parsed = "";
+        this.state.no_searches_yet = true;
+    }
+
+    handleSearchChange = (e, { value }) => {
+        this.setState({ value });
+
+        if (this.timeout) clearTimeout(this.timeout);
+
+        this.timeout = setTimeout(() => {
+            if (this.state.value.length < 1)
+                return this.setState(initialSearchState);
+
+            this.getData(value);
+        }, 1500);
+    };
+
+    displayPopularSearches = () =>
+        this.state.sorted_results.map((el) => (
+            <List.Item style={{ padding: "10pt 10pt 10pt 10pt" }}>
+                <List.Content>
+                    <List.Header>
+                        {el.query}: searched {el.num} time(s)
+                    </List.Header>
+                    <List.Description>
+                        avg. sentiment: {el.sentiment}
+                    </List.Description>
+                </List.Content>
+            </List.Item>
+        ));
+
+    render() {
+        let results;
+
+        if (this.state.no_searches_yet) {
+            results = <div></div>;
+        } else if (!this.state.valid_date) {
+            results = (
+                <Grid.Row centered style={{ padding: "30pt 0 0 0" }}>
+                    <Container fluid>
+                        <Header as="h3">
+                            That text could not be parsed as a date.
+                        </Header>
+                    </Container>
+                </Grid.Row>
+            );
+        } else if (!this.state.data_for_date) {
+            results = (
+                <Grid.Row centered style={{ padding: "30pt 0 0 0" }}>
+                    <Container fluid>
+                        <Header as="h3">
+                            There is no search data for the date you entered.
+                        </Header>
+                    </Container>
+                </Grid.Row>
+            );
+        } else {
+            results = (
+                <>
+                    <Grid.Row centered style={{ padding: "30pt 0 0 0" }}>
+                        <Container fluid>
+                            <Header as="h2">
+                                Search Data from{" "}
+                                {this.state.date_parsed.substr(
+                                    0,
+                                    this.state.date_parsed.indexOf(" ")
+                                )}
+                            </Header>
+                        </Container>
+                    </Grid.Row>
+                    <Grid.Row centered style={{ padding: "10pt 0 0 0" }}>
+                        <List>{this.displayPopularSearches()}</List>
+                    </Grid.Row>
+                </>
+            );
+        }
+
+        return (
+            <Grid container>
+                <Grid.Row centered style={{ padding: "50pt 0 0 0" }}>
+                    <div className="trends-title">search past data</div>
+                </Grid.Row>
+                <Grid.Row centered style={{ padding: "50pt 0 0 0" }}>
+                    <Search
+                        className="search-bar"
+                        loading={this.state.isLoading}
+                        placeholder="enter a date..."
+                        onSearchChange={_.debounce(
+                            this.handleSearchChange,
+                            500,
+                            { leading: true }
+                        )}
+                        value={this.state.value}
+                        open={false}
+                        {...this.props}
+                    />
+                </Grid.Row>
+                <Grid.Row centered style={{ padding: "10pt 0 0 0" }}>
+                    <div className="logo-small">vibecheck</div>
+                </Grid.Row>
+                {results}
+            </Grid>
+        );
+    }
+
+    getData(date) {
+        this.setState({ isLoading: true });
+        fetch(`/trends/${date}`)
+            .then((res) => res.json())
+            .then((data) => {
+                this.setState({ isLoading: false, no_searches_yet: false });
+                console.log(data);
+
+                if (!data.valid_date) {
+                    this.setState({
+                        valid_date: false,
+                        data_for_date: false,
+                    });
+                } else if (!data.data_for_date) {
+                    this.setState({
+                        valid_date: true,
+                        data_for_date: false,
+                    });
+                } else {
+                    let result_objs = [];
+                    for (const search of data.sorted_results) {
+                        result_objs.push({
+                            query: search,
+                            num: data.num_searched[search],
+                            sentiment: data.avg_sentiment[search],
+                        });
+                    }
+
+                    this.setState({
+                        valid_date: true,
+                        data_for_date: true,
+                        sorted_results: result_objs,
+                        date_parsed: data.date_parsed,
+                    });
+                }
+            });
+    }
+}
+
 class ContentInfo extends React.Component {
     render() {
         return (
@@ -408,11 +551,6 @@ class ContentInfo extends React.Component {
                 </Grid.Row>
             </Grid>
         );
-    }
-}
-class ContentTrends extends React.Component {
-    render() {
-        return <div>Trends</div>;
     }
 }
 
