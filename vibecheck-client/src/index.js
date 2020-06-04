@@ -1,18 +1,20 @@
-import _ from "lodash";
 import React from "react";
 import ReactDOM from "react-dom";
-import { Menu } from "semantic-ui-react";
-import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
+import { Menu, Sticky } from "semantic-ui-react";
+import {
+    BrowserRouter as Router,
+    Switch,
+    Route,
+    NavLink,
+    Redirect,
+} from "react-router-dom";
 import "semantic-ui-css/semantic.min.css";
 
 import "./index.css";
 import ContentSearch from "./search.js";
 import ContentTrends from "./trends.js";
 import ContentPolicies from "./policies.js";
-
-const initialMenuState = {
-    activeItem: "search",
-};
+import ContentPageNotFound from "./pagenotfound.js";
 
 class MainPage extends React.Component {
     constructor(props) {
@@ -60,9 +62,11 @@ class MainPage extends React.Component {
                         <Route path="/trends">
                             <ContentTrends />
                         </Route>
-                        <Route path="/info">
+                        <Route path="/policies">
                             <ContentPolicies />
                         </Route>
+                        <Route path="/404" component={ContentPageNotFound} />
+                        <Redirect to="/404" />
                     </Switch>
                 </div>
             </Router>
@@ -71,88 +75,80 @@ class MainPage extends React.Component {
 }
 
 class HeaderMenu extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = initialMenuState;
-    }
-
     handleItemClick = (e, { name }) => this.setState({ activeItem: name });
 
     render() {
         let red = this.props.options.reddit;
         let twit = this.props.options.twitter;
         let all_news = this.props.options.news;
-        const { activeItem } = this.state;
         return (
-            <Menu>
-                <Menu.Item
-                    as={Link}
-                    to="/"
-                    name="search"
-                    active={activeItem === "search"}
-                    onClick={this.handleItemClick}
-                >
-                    Search
-                </Menu.Item>
-                <Menu.Item
-                    as={Link}
-                    to="/trends"
-                    name="trends"
-                    active={activeItem === "trends"}
-                    onClick={this.handleItemClick}
-                >
-                    Trends
-                </Menu.Item>
-                <Menu.Item class="icon">
-                    <div class="ui simple dropdown">
-                        <i class="cog icon"></i>
-                        <div class="menu">
-                            <div onClick={this.props.upRed} class="item">
-                                {" "}
-                                <span
-                                    style={{
-                                        color: red ? "#000000" : "#aaaaaa",
-                                    }}
+            <Sticky context={this.contextRef}>
+                <Menu>
+                    <Menu.Item as={NavLink} exact to="/" name="search">
+                        Search
+                    </Menu.Item>
+                    <Menu.Item as={NavLink} to="/trends" name="trends">
+                        Trends
+                    </Menu.Item>
+                    <Menu.Item className="icon">
+                        <div className="ui simple dropdown">
+                            <i className="cog icon"></i>
+                            <div className="menu">
+                                <div
+                                    onClick={this.props.upRed}
+                                    className="item"
                                 >
-                                    Reddit <i class="mini reddit icon"></i>
-                                </span>{" "}
-                            </div>
-                            <div onClick={this.props.upTwit} class="item">
-                                {" "}
-                                <span
-                                    style={{
-                                        color: twit ? "#000000" : "#aaaaaa",
-                                    }}
+                                    {" "}
+                                    <span
+                                        style={{
+                                            color: red ? "#000000" : "#aaaaaa",
+                                        }}
+                                    >
+                                        <i className="mini reddit icon" />{" "}
+                                        Reddit
+                                    </span>{" "}
+                                </div>
+                                <div
+                                    onClick={this.props.upTwit}
+                                    className="item"
                                 >
-                                    Twitter <i class="mini twitter icon"></i>
-                                </span>{" "}
-                            </div>
-                            <div onClick={this.props.upNews} class="item">
-                                {" "}
-                                <span
-                                    style={{
-                                        color: all_news ? "#000000" : "#aaaaaa",
-                                    }}
+                                    {" "}
+                                    <span
+                                        style={{
+                                            color: twit ? "#000000" : "#aaaaaa",
+                                        }}
+                                    >
+                                        <i className="mini twitter icon" />{" "}
+                                        Twitter
+                                    </span>{" "}
+                                </div>
+                                <div
+                                    onClick={this.props.upNews}
+                                    className="item"
                                 >
-                                    News <i class=""></i>
-                                </span>{" "}
+                                    {" "}
+                                    <span
+                                        style={{
+                                            color: all_news
+                                                ? "#000000"
+                                                : "#aaaaaa",
+                                        }}
+                                    >
+                                        <i className="mini newspaper icon" />{" "}
+                                        News
+                                    </span>{" "}
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </Menu.Item>
-
-                <Menu.Menu position="right">
-                    <Menu.Item
-                        as={Link}
-                        to="/info"
-                        name="info"
-                        active={activeItem === "info"}
-                        onClick={this.handleItemClick}
-                    >
-                        Warnings and Policies
                     </Menu.Item>
-                </Menu.Menu>
-            </Menu>
+
+                    <Menu.Menu position="right">
+                        <Menu.Item as={NavLink} to="/policies" name="policies">
+                            Warnings and Policies
+                        </Menu.Item>
+                    </Menu.Menu>
+                </Menu>
+            </Sticky>
         );
     }
 }

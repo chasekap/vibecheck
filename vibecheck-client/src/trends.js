@@ -10,6 +10,7 @@ import {
     YAxis,
     CartesianGrid,
     Tooltip,
+    Label,
 } from "recharts";
 import "./index.css";
 import "semantic-ui-css/semantic.min.css";
@@ -19,18 +20,17 @@ const initialSearchState = {
     results: [],
     value: "",
     timeout: 0,
+    sorted_results: [],
+    valid_date: false,
+    data_for_date: false,
+    date_parsed: "",
+    no_searches_yet: true,
 };
 
 class ContentTrends extends React.Component {
     constructor(props) {
         super(props);
         this.state = initialSearchState;
-
-        this.state.sorted_results = [];
-        this.state.valid_date = false;
-        this.state.data_for_date = false;
-        this.state.date_parsed = "";
-        this.state.no_searches_yet = true;
     }
 
     handleSearchChange = (e, { value }) => {
@@ -126,7 +126,8 @@ class ContentTrends extends React.Component {
                                 {this.state.date_parsed.substr(
                                     0,
                                     this.state.date_parsed.indexOf(" ")
-                                )}
+                                )}{" "}
+                                UTC
                             </Header>
                         </Container>
                     </Grid.Row>
@@ -135,27 +136,60 @@ class ContentTrends extends React.Component {
                             width={400}
                             height={400}
                             data={this.state.sorted_results}
+                            margin={{
+                                top: 5,
+                                right: 40,
+                                bottom: 5,
+                            }}
                         >
                             <CartesianGrid strokeDasharray="3 3" />
                             <XAxis dataKey="query" name="times searched" />
-                            <YAxis />
+                            <YAxis
+                                label={{
+                                    value: "times searched",
+                                    angle: -90,
+                                    position: "insideLeft",
+                                }}
+                            />
                             <Tooltip />
                             <Bar dataKey="times_searched" fill="#8884d8" />
                         </BarChart>
                     </Grid.Row>
                     <Grid.Row centered style={{ padding: "10pt 0 0 0" }}>
-                        <ScatterChart width={400} height={400}>
+                        <ScatterChart
+                            width={400}
+                            height={400}
+                            margin={{
+                                top: 5,
+                                right: 40,
+                                bottom: 5,
+                            }}
+                        >
                             <CartesianGrid />
                             <XAxis
                                 type="number"
                                 dataKey="times_searched"
                                 name="times searched"
-                            />
+                                label
+                            >
+                                <Label
+                                    value="times searched"
+                                    offset={0}
+                                    position="insideBottom"
+                                />
+                            </XAxis>
+
                             <YAxis
                                 type="number"
                                 dataKey="sentiment"
                                 name="avg. sentiment"
+                                label={{
+                                    value: "sentiment score",
+                                    angle: -90,
+                                    position: "insideLeft",
+                                }}
                             />
+
                             <Tooltip
                                 cursor={{ strokeDasharray: "3 3" }}
                                 wrapperStyle={{ zIndex: 100 }}
@@ -167,7 +201,7 @@ class ContentTrends extends React.Component {
                             />
                         </ScatterChart>
                     </Grid.Row>
-                    <Grid.Row centered style={{ padding: "30pt 0 0 0" }}>
+                    <Grid.Row centered style={{ padding: "10pt 0 0 0" }}>
                         <List>{this.displayPopularSearches()}</List>
                     </Grid.Row>
                 </Grid>
@@ -177,7 +211,7 @@ class ContentTrends extends React.Component {
         return (
             <Grid container>
                 <Grid.Row centered style={{ padding: "50pt 0 0 0" }}>
-                    <div className="trends-title">search past data</div>
+                    <div className="trends-title">discover past trends</div>
                 </Grid.Row>
                 <Grid.Row centered style={{ padding: "50pt 0 0 0" }}>
                     <Search
@@ -208,7 +242,6 @@ class ContentTrends extends React.Component {
             .then((res) => res.json())
             .then((data) => {
                 this.setState({ isLoading: false, no_searches_yet: false });
-                console.log(data);
 
                 if (!data.valid_date) {
                     this.setState({

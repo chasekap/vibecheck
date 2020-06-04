@@ -1,4 +1,3 @@
-import _ from "lodash";
 import React from "react";
 import { Grid, Container, Header } from "semantic-ui-react";
 import "semantic-ui-css/semantic.min.css";
@@ -7,7 +6,10 @@ class ContentPolicies extends React.Component {
     render() {
         return (
             <Grid container>
-                <Grid.Row centered style={{ padding: "50pt 0 0 0" }}>
+                <Grid.Row style={{ padding: "50pt 0 0 0" }}>
+                    <div className="logo-small">vibecheck</div>
+                </Grid.Row>
+                <Grid.Row style={{ padding: "20pt 0 0 0" }}>
                     <Container fluid textAlign="left">
                         <Header as="h2">
                             The Nature of vibecheck's Content
@@ -32,6 +34,36 @@ class ContentPolicies extends React.Component {
                             <em>vibecheck</em> indexes; no results have been
                             created or modified by the developers of this site.
                             <em> Proceed with caution.</em>
+                            <br />
+                            <br />
+                            Data is currently sourced from the Reddit API, the
+                            Twitter API, and News API.
+                            <br />
+                            <br />
+                            <a
+                                href="https://www.reddit.com/dev/api/"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            >
+                                Learn more about the Reddit API.
+                            </a>
+                            <br />
+                            <a
+                                href="https://developer.twitter.com/en/docs"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            >
+                                Learn more about the Twitter API.
+                            </a>
+                            <br />
+                            <a
+                                href="https://newsapi.org/docs"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            >
+                                Learn more about News API.
+                            </a>
+                            <br />
                         </p>
 
                         <Header as="h2">The Sentiment Score</Header>
@@ -42,8 +74,8 @@ class ContentPolicies extends React.Component {
                             the tool finds during processing, so a plethora of
                             negative sentiment may end up canceled out by a
                             plethora of positive sentiment, leaving you with a
-                            fairly neutral score. Additonally, you may find that
-                            the score and results change between multiple
+                            fairly neutral score. Additionally, you may find
+                            that the score and results change between multiple
                             searches of the same query, even within a few
                             minutes of each other. This is also normal; the
                             primary cause of this variance are the interfaces
@@ -57,14 +89,18 @@ class ContentPolicies extends React.Component {
 
                         <Header as="h2">Privacy Policy</Header>
                         <p>
-                            We care about the privacy of our users. Thus, we
-                            collect the minimum amount of information required
-                            to keep this site working as intended. Each search
-                            and its results are recorded; however, no personally
-                            identifying nformation is associated with any of
-                            these searches. Furthermore, we collect no
+                            We deeply care about the privacy of our users. Thus,
+                            we collect the minimum amount of information
+                            required to keep this site working as intended. Each
+                            search and its results are recorded; however, no
+                            personally identifying nformation is associated with
+                            any of these searches. Furthermore, we collect no
                             personally identifying information upon any other
-                            action taken on the site, nor do we use cookies.
+                            action taken on the site, nor do we use cookies. In
+                            other words, only the information about the search
+                            itself is saved; not a byte is spent logging any
+                            information about who you are because that's not our
+                            business.
                         </p>
                     </Container>
                 </Grid.Row>

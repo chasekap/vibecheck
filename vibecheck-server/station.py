@@ -37,16 +37,7 @@ def search_request(search, reddit, twitter, news):
 
     comment_length = len(coms)
     sites_searched = [reddit, twitter, news]
-
     word_count = s.word_count(coms)
-    output_dict = {
-        "urls": urls,
-        "avg_sentiment": avg_sentiment,
-        "word_count": word_count,
-        "comments": comment_length,
-        "sample": sample,
-        "sites": sites_searched
-    }
 
     search_db_entry = UserSearch(
         search=search,
@@ -54,12 +45,32 @@ def search_request(search, reddit, twitter, news):
         avg_sentiment=avg_sentiment,
         word_count=word_count,
         comments=comment_length,
-        sample=sample,
         sites=sites_searched
     )
 
     db.session.add(search_db_entry)
     db.session.commit()
+
+    query_history = UserSearch.query.filter_by(search=search.strip()).all()
+    query_history_sentiment = dict()
+    sorted_query_history = []
+
+    for query in query_history:
+        query_history_sentiment[query.time] = query.avg_sentiment
+        sorted_query_history.append(query.time)
+
+    sorted_query_history = sorted(sorted_query_history)
+
+    output_dict = {
+        "urls": urls,
+        "avg_sentiment": avg_sentiment,
+        "word_count": word_count,
+        "comments": comment_length,
+        "sample": sample,
+        "sites": sites_searched,
+        "query_history": sorted_query_history,
+        "query_history_sentiment": query_history_sentiment
+    }
 
     return output_dict
 
@@ -121,7 +132,6 @@ class UserSearch(db.Model):
     avg_sentiment = db.Column(db.Float, unique=False)
     word_count = db.Column(db.PickleType)
     comments = db.Column(db.Integer, unique=False)
-    sample = db.Column(db.PickleType)
     sites = db.Column(db.PickleType)
 
     def __repr__(self):
