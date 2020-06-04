@@ -10,7 +10,7 @@ import {
     CartesianGrid,
     Tooltip,
     ReferenceLine,
-    Brush,
+    Brush
 } from "recharts";
 
 import "./index.css";

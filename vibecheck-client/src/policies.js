@@ -9,7 +9,7 @@ class ContentPolicies extends React.Component {
                 <Grid.Row style={{ padding: "50pt 0 0 0" }}>
                     <div className="logo-small">vibecheck</div>
                 </Grid.Row>
-                <Grid.Row style={{ padding: "20pt 0 0 0" }}>
+                <Grid.Row style={{ padding: "20pt 0 20pt 0" }}>
                     <Container fluid textAlign="left">
                         <Header as="h2">
                             The Nature of vibecheck's Content

@@ -201,7 +201,7 @@ class ContentTrends extends React.Component {
                             />
                         </ScatterChart>
                     </Grid.Row>
-                    <Grid.Row centered style={{ padding: "10pt 0 0 0" }}>
+                    <Grid.Row centered style={{ padding: "10pt 0 20pt 0" }}>
                         <List>{this.displayPopularSearches()}</List>
                     </Grid.Row>
                 </Grid>
