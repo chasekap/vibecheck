@@ -158,7 +158,7 @@ class ContentSearch extends React.Component {
     getData(search) {
         this.setState({ isLoading: true });
         fetch(
-            `/search/${search}/${this.props.options.reddit}/${this.props.options.twitter}`
+            `/search/${search}/${this.props.options.reddit}/${this.props.options.twitter}/${this.props.options.news}`
         )
             .then((res) => res.json())
             .then((data) => {
