@@ -66,6 +66,7 @@ class Page extends React.Component {
         this.state = {
             reddit: true,
             twitter: false,
+            news: false,
             amount: 1000,
             date: "week",
         };
@@ -80,6 +81,11 @@ class Page extends React.Component {
             twitter: !this.state.twitter,
         });
     }
+    updateNews() {
+        this.setState({
+            news: !this.state.news,
+        });
+    }
 
     render() {
         return (
@@ -89,6 +95,7 @@ class Page extends React.Component {
                         options={this.state}
                         upRed={this.updateReddit.bind(this)}
                         upTwit={this.updateTwitter.bind(this)}
+                        upNews={this.updateNews.bind(this)}
                     />
                     <Switch>
                         <Route exact path="/">
@@ -118,6 +125,7 @@ class HeaderMenu extends React.Component {
     render() {
         let red = this.props.options.reddit;
         let twit = this.props.options.twitter;
+        let all_news = this.props.options.news;
         const { activeItem } = this.state;
         return (
             <Menu>
@@ -161,6 +169,16 @@ class HeaderMenu extends React.Component {
                                     }}
                                 >
                                     Twitter <i class="mini twitter icon"></i>
+                                </span>{" "}
+                            </div>
+                            <div onClick={this.props.upNews} class="item">
+                                {" "}
+                                <span
+                                    style={{
+                                        color: all_news ? "#000000" : "#aaaaaa",
+                                    }}
+                                >
+                                    News <i class=""></i>
                                 </span>{" "}
                             </div>
                         </div>
@@ -297,7 +315,7 @@ class ContentSearch extends React.Component {
     getData(search) {
         this.setState({ isLoading: true });
         fetch(
-            `/search/${search}/${this.props.options.reddit}/${this.props.options.twitter}`
+            `/search/${search}/${this.props.options.reddit}/${this.props.options.twitter}/${this.props.options.news}`
         )
             .then((res) => res.json())
             .then((data) => {
@@ -420,7 +438,7 @@ class ContentTrends extends React.Component {
         return (
             <Grid container>
                 <Grid.Row centered style={{ padding: "50pt 0 0 0" }}>
-                    <div className="trends-title">search past data</div>
+                    <div className="trends-title">Search Past Data</div>
                 </Grid.Row>
                 <Grid.Row centered style={{ padding: "50pt 0 0 0" }}>
                     <Search

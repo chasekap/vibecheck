@@ -18,8 +18,8 @@ def initial():
     db.create_all()
 
 
-@app.route('/search/<search>/<reddit>/<twitter>')
-def search_request(search, reddit, twitter):
+@app.route('/search/<search>/<reddit>/<twitter>/<news>')
+def search_request(search, reddit, twitter, news):
 
     coms = ['n']
     #tweets = s.search_twitter(search)
@@ -30,11 +30,13 @@ def search_request(search, reddit, twitter):
     if reddit == "true":
         urls = s.search_google(search)
         coms += s.search_reddit(urls)
+    if news == "true":
+        coms += s.search_all_news(search)
 
     avg_sentiment, sample = s.analyze_text(coms, search)
 
     comment_length = len(coms)
-    sites_searched = [reddit, twitter]
+    sites_searched = [reddit, twitter, news]
 
     word_count = s.word_count(coms)
     output_dict = {
@@ -91,10 +93,10 @@ def trends_date_request(date):
         else:
             num_searched[query_text] += 1
             avg_sentiment[query_text] += query.avg_sentiment
-    
+
     for search in avg_sentiment:
         avg_sentiment[search] /= num_searched[search]
-    
+
     sorted_results = []
     for search in sorted(num_searched, key=num_searched.get, reverse=True):
         sorted_results.append(search)

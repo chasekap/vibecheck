@@ -28,7 +28,7 @@ Windows: `choco install mysql`
 
 Both of these sources set the root account of the locally-hosted MySQL server to be passwordless by default.
 
-Now, start up a local MySQL server with `mysql.server start`. On the first run of this server, you'll need to follow some
+Now, start up a local MySQL server with `mysql.server start` or `"C:\Program Files\MySQL\MySQL Server 5.7\bin\vibecheck_db"` if using Powershell. On the first run of this server, you'll need to follow some
 extra steps. Otherwise, you're done! You can stop the server with `mysql.server stop` or move forward with starting the Flask server.
 
 If this is the first time the MySQL server's been run, you'll want to run `mysql -u root` to access the MySQL monitor. Then,
@@ -54,6 +54,7 @@ Run `pip install python-dotenv` to include the .flaskenv/.env files.
 You should also set the environmental variable FLASK_APP to `station.py`
 
 `export FLASK_APP=station.py` (in Bash)
+`$env:FLASK_APP = "station.py"` (in Powershell)
 
 Run `yarn start-api` to start flask localhost on Windows  
 Run `yarn start-api-m` to start flask localhost on Mac
