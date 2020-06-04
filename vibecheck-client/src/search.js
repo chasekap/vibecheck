@@ -11,7 +11,6 @@ import {
     Tooltip,
     ReferenceLine,
     Brush,
-    Label,
 } from "recharts";
 
 import "./index.css";
