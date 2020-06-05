@@ -11,9 +11,7 @@ code {
     font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
         monospace;
 }
-#fuck-semantic{
-    
-}
+
 #html-canvas > span:hover {
     opacity: 1 !important;
     font-weight: bolder;
@@ -34,6 +32,26 @@ code {
     font-weight: 400;
     text-decoration: none solid rgb(68, 68, 68);
     font-variant: small-caps;
+    text-transform: lowercase;
+}
+.logo-small {
+    font-family: Tahoma, Geneva, sans-serif;
+    font-size: 20px;
+    letter-spacing: 4px;
+    word-spacing: 0px;
+    color: #000000;
+    font-weight: 400;
+    text-decoration: none solid rgb(68, 68, 68);
+    font-variant: small-caps;
+    text-transform: lowercase;
+}
+
+.trends-title {
+    font-family: Tahoma, Geneva, sans-serif;
+    font-size: 36px;
+    color: #000000;
+    font-weight: 400;
+    text-decoration: none solid rgb(68, 68, 68);
     text-transform: lowercase;
 }
 

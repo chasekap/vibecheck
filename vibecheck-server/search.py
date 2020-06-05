@@ -13,10 +13,6 @@ from datetime import date, timedelta
 from nltk.corpus import stopwords
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 
-# nltk.download('stopwords')
-# nltk.download('punkt')
-# nltk.download('averaged_perceptron_tagger')
-
 blocked = {'RT', '@', 'https', '*', '>', '<', '[', ']', '"', '%', 'i', '|',
            'way', 't', 'http', 'post', 's', '’'}  # common things we should filter
 # google auth
@@ -183,31 +179,28 @@ def search_twitter(keyword):
 
     return twitter_comments
 
-# todo -add more specific functions to search individual news sources, update dates automatically,
 # merge relevancy and popularity results for better results
 
 
-'''
 def search_all_news(keyword):
     newsapi = NewsApiClient(api_key=news_api_key)
     article_list = []
 
     all_articles = newsapi.get_everything(q=keyword,
-                                      from_param=start_date,
-                                      to=end_date,
-                                      language='en',
-                                      sort_by='popularity',
-                                      page=1, page_size=100)
+                                          from_param=start_date,
+                                          to=end_date,
+                                          language='en',
+                                          sort_by='popularity',
+                                          page=1, page_size=100)
 
     for article in all_articles['articles']:
         article_list.append(article['description'])
         # print(article['description'] + '\n')
 
     return article_list
-'''
 
 
-#only gathers breaking/top stories but in more detail
+# only gathers breaking/top stories but in more detail
 def search_top_news(keyword):
     newsapi = NewsApiClient(api_key=news_api_key)
     article_list = []
@@ -221,15 +214,6 @@ def search_top_news(keyword):
         #print(article['description'] + '\n')
 
     return article_list
-
-
-'''
-public_tweets = api.search(keyword,count=100)
-for tweet in public_tweets:
-    tweety = tweet.text
-    # print(tweety + '\n') test output
-    twitter_comments.append(tweety)
-'''
 
 
 def analyze_text(texts, term):
@@ -247,11 +231,3 @@ def analyze_text(texts, term):
         return (sentiment_sum / num_datum, interestingText)
     else:
         return "Nothing Found!"
-
-
-'''
-analyze_text(twitter_comments)
-mean_sentiment = sentiment_sum / num_datum
-'''
-# print("Mean Sentiment:", mean_sentiment, " - ", interpret_compound_score(mean_sentiment))
-# search_twitter("Trump")
