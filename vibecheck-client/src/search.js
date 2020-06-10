@@ -10,7 +10,7 @@ import {
     CartesianGrid,
     Tooltip,
     ReferenceLine,
-    Brush
+    Brush,
 } from "recharts";
 
 import "./index.css";
@@ -47,21 +47,16 @@ class SimpCloud extends React.Component {
     render() {
         if (this.props.word_vis === true) {
             return (
-                <>
-                    <Container fluid>
-                        <Header as="h2">Word Cloud of Analyzed Data</Header>
-                    </Container>
-                    <div>
-                        <div
-                            id="html-canvas"
-                            ref="my-canvas"
-                            style={{
-                                width: this.props.words.length * 8,
-                                height: this.props.words.length * 8,
-                            }}
-                        />
-                    </div>
-                </>
+                <div>
+                    <div
+                        id="html-canvas"
+                        ref="my-canvas"
+                        style={{
+                            width: this.props.words.length * 8,
+                            height: this.props.words.length * 8,
+                        }}
+                    />
+                </div>
             );
         } else {
             return <div ref="my-canvas" />;
@@ -133,7 +128,7 @@ class ContentSearch extends React.Component {
                 <>
                     <Grid.Row centered style={{ padding: "50pt 0 0 0" }}>
                         <Container fluid>
-                            <Header as="h2">History of Search Term</Header>
+                            <Header as="h2">Search Term Data</Header>
                         </Container>
                     </Grid.Row>
                     <Grid.Row centered style={{ padding: "5pt 0 0 0" }}>
@@ -204,7 +199,7 @@ class ContentSearch extends React.Component {
                     />
                 </Grid.Row>
                 {historyGraph}
-                <Grid.Row centered style={{ padding: "50pt 0 0 0" }}>
+                <Grid.Row centered style={{ padding: "30pt 0 0 0" }}>
                     <SimpCloud
                         words={this.state.word_cloud}
                         word_vis={this.state.word_vis}
