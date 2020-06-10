@@ -93,7 +93,7 @@ class ContentPolicies extends React.Component {
                             we collect the minimum amount of information
                             required to keep this site working as intended. Each
                             search and its results are recorded; however, no
-                            personally identifying nformation is associated with
+                            personally identifying information is associated with
                             any of these searches. Furthermore, we collect no
                             personally identifying information upon any other
                             action taken on the site, nor do we use cookies. In
