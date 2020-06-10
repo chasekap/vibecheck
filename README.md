@@ -79,3 +79,14 @@ Run `npm install`.
 Then, run `yarn start` to start the react localhost.
 
 _If you need to add a new dependency, run `npm install [module] --save`_
+
+### API Limits
+A number of the APIs used in this project have limits on daily use because of
+the user tier we're currently using. This especially applies to Reddit search,
+which utilizes the Google Search API upon every request. This can be helped by
+changing the API key to one associated with a developer account with more 
+access, but this would cost money. Upon a proper product release, this would
+be trivial, but the current behavior is suitable for the class project and is
+free. If too many searches are made in one day, for Reddit especially, a search
+might not complete, but the application otherwise works as intended. This
+behavior will not occur upon the use of developer accounts with billing.
